@@ -1,0 +1,19 @@
+# Log files
+*.log
+
+# htaccess
+.htaccess
+
+# the build directories
+dist
+deploy
+
+# node modules
+node_modules
+
+# vendor files
+vendor
+
+# environment
+.env
+
