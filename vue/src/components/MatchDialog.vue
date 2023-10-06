@@ -1,11 +1,10 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
 import { is_valid } from '@/lib/functions';
-import type { Match, Player } from '@/stores/auth';
-import { saveMatch, removeMatch as removeMatchAPI } from '@/lib/api.js';
+import type { Match, Player } from '@/lib/types';
 import { useAuthStore } from '@/stores/auth';
+import { saveMatch, removeMatch as removeMatchAPI } from '@/lib/api';
 import { dayjs } from 'element-plus';
-import lang from '@/lib/lang.js';
+import lang from '@/lib/lang';
 const props = defineProps<{
     visible:boolean;
     matchdata: Match;
@@ -133,4 +132,4 @@ import { ElDialog, ElForm, ElFormItem, ElInput, ElButton, ElSelect, ElOption } f
         </span>
       </template>
     </ElDialog>
-</template>
+</template>@/lib/lang.js

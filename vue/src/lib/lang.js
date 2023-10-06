@@ -49,7 +49,6 @@ export default {
     SCORE2: __('Score Player 2', 'memberdata-ranking'),
     SCORE: __('Score', 'memberdata-ranking'),
     RANK: __('Rank', 'memberdata-ranking'),
-    NAME: __('Name', 'memberdata-ranking'),
     MATCHDATE: __('Date', 'memberdata-ranking'),
     UNKNOWNPLAYER: __('N.N.', 'memberdata-ranking'),
     DATEFORMATWITHOUTMINUTES: __('YYYY-MM-DD HH:mm', 'memberdata-ranking'),

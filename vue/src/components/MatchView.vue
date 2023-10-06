@@ -2,10 +2,10 @@
 import { ref, watch } from 'vue';
 import type { Ref } from 'vue';
 import { matches, reassessMatches } from '@/lib/api';
-import type { FieldDefinition, Match, Result } from '@/stores/auth';
+import type { FieldDefinition, Match, Result } from '@/lib/types';
 import { useAuthStore } from '@/stores/auth';
 import { dayjs } from 'element-plus';
-import lang from '@/lib/lang.js';
+import lang from '@/lib/lang';
 const props = defineProps<{
     visible:boolean;
 }>();
@@ -40,16 +40,16 @@ function updateMatches()
 }
 
 const matchValue:Ref<Match> = ref({id:0, entered_at: '', results: [{id:0, player_id: 0}, {id:0, player_id: 0}]});
-const visible:Ref<boolean> = ref(false);
+const visibleDialog:Ref<boolean> = ref(false);
 
 function onClose()
 {
-    visible.value = false;
+    visibleDialog.value = false;
 }
 
 function onSave()
 {
-    visible.value = false;
+    visibleDialog.value = false;
     updateMatches();
 }
 
@@ -78,7 +78,7 @@ function onUpdate(fieldDef:FieldDefinition)
 function addNew()
 {
     matchValue.value = {id: 0, entered_at:'', results:[{id:0, player_id: 0}, {id:0, player_id: 0}]};
-    visible.value = true;
+    visibleDialog.value = true;
 }
 
 function reassess()
@@ -125,8 +125,8 @@ function formatMatchDate(dt:string)
 }
 
 import MatchDialog from './MatchDialog.vue';
-import { ElButton, ElSelect, ElOption } from 'element-plus';
 import GroupSelector from './GroupSelector.vue';
+import { ElButton } from 'element-plus';
 </script>
 <template>
     <div>
@@ -145,7 +145,7 @@ import GroupSelector from './GroupSelector.vue';
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="matchData in matchList" :key="matchData.id" @dblclick="() => { matchValue = matchData; visible = true;}">
+                    <tr v-for="matchData in matchList" :key="matchData.id" @dblclick="() => { matchValue = matchData; visibleDialog = true;}">
                         <td>{{ getPlayersFromResults(matchData) }}</td>
                         <td>{{ getScoreFromResults(matchData) }}</td>
                         <td>{{ formatMatchDate(matchData.entered_at) }}</td>
@@ -154,6 +154,6 @@ import GroupSelector from './GroupSelector.vue';
                 </tbody>
             </table>
         </div>
-        <MatchDialog :matchdata="matchValue" :visible="visible" @on-close="onClose" @on-save="onSave" @on-update="onUpdate"/>
+        <MatchDialog :matchdata="matchValue" :visible="visibleDialog" @on-close="onClose" @on-save="onSave" @on-update="onUpdate"/>
     </div>
-</template>
+</template>@/lib/lang

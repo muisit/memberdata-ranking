@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
-import lang from '@/lib/lang.js';
+import lang from '@/lib/lang';
 const props = defineProps<{
     visible:boolean;
 }>();
@@ -31,7 +31,6 @@ function filterPlayers()
 }
 
 import GroupSelector from './GroupSelector.vue';
-import { ElButton, ElSelect, ElOption } from 'element-plus';
 </script>
 <template>
     <div>

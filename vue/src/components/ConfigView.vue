@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { watch, ref } from 'vue';
-import { saveconfiguration } from '@/lib/api.js';
+import { watch } from 'vue';
+import { saveconfiguration } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth';
 const props = defineProps<{
     visible:boolean;
 }>();
-import lang from '@/lib/lang.js';
+import lang from '@/lib/lang';
 
 const auth = useAuthStore();
 
@@ -88,7 +88,7 @@ import { ElButton, ElInput, ElSelect, ElOption, ElCheckbox } from 'element-plus'
       <tr>
         <td valign="top">{{ lang.GROUP }}</td>
         <td valign="top">
-          <ElSelect :model-value="auth.configuration.groupingfield" @update:model-value="(e) => auth.configuration.groupingfield = e">
+          <ElSelect :model-value="auth.configuration.groupingfield || ''" @update:model-value="(e) => auth.configuration.groupingfield = e">
             <ElOption label="No grouping" value="none"/>
             <ElOption v-for="name in auth.configuration.attributes" :key="name" :label="name" :value="name"/>
           </ElSelect>
@@ -98,11 +98,11 @@ import { ElButton, ElInput, ElSelect, ElOption, ElCheckbox } from 'element-plus'
       <tr>
         <td valign="top">{{  lang.GROUPS }}</td>
         <td valign="top">
-          <div v-for="name in auth.configuration.groupingvalues" :key="name" class="selectlist">
+          <div v-for="name in auth.configuration.groupingvalues" :key="name || ''" class="selectlist">
               <ElCheckbox 
                 v-if="name != null"
                 :model-value="auth.configuration.validgroups?.includes(name || 'none')"
-                @update:model-value="(e) => markValidGroup(e, name || 'none')"
+                @update:model-value="(e) => markValidGroup(e ? true : false, name || 'none')"
               />
               <span v-if="name != null">{{ name || 'None' }}</span>
           </div>

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { useAuthStore } from './stores/auth';
-import lang from '@/lib/lang.js';
+import lang from '@/lib/lang';
 const props = defineProps<{
     nonce:string;
     url:string;

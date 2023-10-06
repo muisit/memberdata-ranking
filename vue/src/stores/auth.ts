@@ -2,61 +2,8 @@ import { ref } from 'vue'
 import type { Ref } from 'vue';
 import { defineStore } from 'pinia'
 import { players, configuration as configurationAPI } from '@/lib/api';
-import lang from '@/lib/lang.js';
-
-export interface Player {
-    id: number;
-    name: string;
-    groupname?: string;
-    status?: string;
-    rank: number;
-}
-
-interface PlayerById {
-    [key:string]: Player;
-}
-
-export interface FieldDefinition {
-    field: string;
-    value: string;
-}
-
-export interface Configuration {
-    base_rank?: string;
-    s_value?: string;
-    c_value?: string;
-    k_value?: string;
-    l_value?: string;
-    attributes?: Array<string>;
-    namefield?: string;
-    groupingfield?: string|null;
-    groupingvalues?: Array<string|null>;
-    validgroups: Array<string>;
-}
-
-export interface Result {
-    id: number;
-    match_id?: number;
-    player_id?: number;
-    score ?: number;
-    expected ?: number;
-    rank_start ?: number;
-    rank_change ?: number;
-    rank_end ?: number;
-    c_value ?: number;
-    s_value ?: number;
-    k_value ?: number;
-    l_value ?: number;
-    is_dirty?: string;
-    modified?: string;
-    modifier?: number;
-}
-
-export interface Match {
-    id: number;
-    entered_at: string;
-    results: Array<Result>;
-}
+import lang from '@/lib/lang';
+import type {Configuration, Player, PlayerById } from '@/lib/types';
 
 export const useAuthStore = defineStore('auth', () => {
     const nonce = ref('');
@@ -96,14 +43,15 @@ export const useAuthStore = defineStore('auth', () => {
             return playersList.value;
         })
         .catch((e:any) => {
+            console.log(e);
             alert(lang.ERROR_PLAYERS);
         })
     }
 
     function updatePlayerInList(player:Player)
     {
-        var wasFound = false;
-        var newlist = playersList.value.map((data) => {
+        let wasFound = false;
+        const newlist = playersList.value.map((data) => {
             if (data.id == player.id) {
                 wasFound = true;
                 return player;
@@ -124,32 +72,36 @@ export const useAuthStore = defineStore('auth', () => {
     function sortPlayers(sortingvalue:string)
     {
         playersList.value.sort((pa, pb) => {
-            for (var i = 0; i< sortingvalue.length; i++) {
-                var c = sortingvalue[i];
-                var v1 = null;
-                var v2 = null;
-                var comp = -1;
+            for (let i = 0; i< sortingvalue.length; i++) {
+                const c = sortingvalue[i];
+                let v1 = null;
+                let v2 = null;
+                let comp = -1;
                 switch (c) {
                     case 'n':
                         comp = 1;
+                        // falls through
                     case 'N':
                         v1 = pa.name;
                         v2 = pb.name;
                         break;
                     case 'i':
                         comp = 1;
+                        // falls through
                     case 'I':
                         v1 = pa.id;
                         v2 = pb.id;
                         break;
                     case 'g':
                         comp = 1;
+                        // falls through
                     case 'G':
                         v1 = pa.groupname;
                         v2 = pb.groupname;
                         break;
                     case 'r':
                         comp = 1;
+                        // falls through
                     case 'R':
                         v1 = pa.rank;
                         v2 = pb.rank;

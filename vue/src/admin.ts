@@ -4,10 +4,10 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './AdminView.vue'
 
-var el = document.getElementById('memberdata_ranking-admin');
-var props = {};
+const el = document.getElementById('memberdata_ranking-admin');
+let props = {};
 if (el) {
-    var data = el.getAttribute('data-memberdata_ranking');
+    const data = el.getAttribute('data-memberdata_ranking');
     if (data) {
         props = JSON.parse(data);
     }

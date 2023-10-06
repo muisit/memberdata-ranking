@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useAuthStore } from '@/stores/auth';
-import lang from '@/lib/lang.js';
+import lang from '@/lib/lang';
 const auth = useAuthStore();
 
 import { ElSelect, ElOption } from 'element-plus';
