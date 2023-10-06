@@ -1,5 +1,6 @@
 var controller = null;
 import { useAuthStore } from '../stores/auth';
+import lang from './lang.js';
 
 export function abort_all_calls() {
     if(controller) {
@@ -13,10 +14,10 @@ function validateResponse() {
         return res.json().then(json => {
             if (!json || !json.success) {
                 if (json.data && json.data.error) {
-                    throw new Error('Validation', {cause: json.data});
+                    throw new Error(lang.ERROR_VALIDATION, {cause: json.data});
                 }
                 else {
-                    throw new Error("Network error, please try again");
+                    throw new Error(lang.ERROR_NETWORK_GEN);
                 }
             }
             return json;
@@ -92,7 +93,6 @@ export function players() {
 }
 
 export function savePlayer(player) {
-    console.log('saving player ', player);
     return fetchJson('player/save', player);
 }
 

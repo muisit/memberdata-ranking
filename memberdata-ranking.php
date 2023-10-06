@@ -10,7 +10,7 @@
  *
  * @wordpress-plugin
  * Plugin Name:         memberdata-ranking
- * Plugin URI:          https://github.com/muisit/wp-elo
+ * Plugin URI:          https://github.com/muisit/memberdata-ranking
  * Description:         Simple ranking of players in a configurable elo calculation
  * Version:             1.0.0
  * Requires at least:   6.1

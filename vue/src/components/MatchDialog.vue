@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { is_valid } from '@/lib/functions';
-import type { Match } from '@/stores/auth';
+import type { Match, Player } from '@/stores/auth';
 import { saveMatch, removeMatch as removeMatchAPI } from '@/lib/api.js';
 import { useAuthStore } from '@/stores/auth';
 import { dayjs } from 'element-plus';
+import lang from '@/lib/lang.js';
 const props = defineProps<{
     visible:boolean;
     matchdata: Match;
@@ -21,7 +22,7 @@ function closeForm()
 function removeMatch()
 {
     if (is_valid(props.matchdata.id)) {
-        if (confirm('Are you sure you want to remove this match permanently?')) {
+        if (confirm(lang.CONFIRM_DELETE_MATCH)) {
             removeMatchAPI(props.matchdata).then(() => emits('onSave'));
         }
     }
@@ -31,28 +32,28 @@ function submitForm()
 {
     let retval = true;
     if (!is_valid(props.matchdata.results[0].player_id)) {
-        alert("Please pick a valid player for player 1");
+        alert(lang.MATCH_VALID_PLAYER1);
         retval = false;
     }
     if (!is_valid(props.matchdata.results[1].player_id)) {
-        alert("Please pick a valid player for player 2");
+        alert(lang.MATCH_VALID_PLAYER2);
         retval = false;
     }
     if (retval && props.matchdata.results[0].player_id == props.matchdata.results[1].player_id) {
-        alert("Person cannot score against him/herself");
+        alert(lang.MATCH_NO_DOUBLE_PLAYER);
         retval = false;
     }
     var dt = dayjs(props.matchdata.entered_at);
     if (!dt.isValid()) {
-        alert("Please enter a valid date or date-time for the match");
+        alert(lang.MATCH_VALID_DATE);
         retval = false;
     }
 
     if (retval && parseInt('' + props.matchdata.results[0].score) < 0 || isNaN(props.matchdata.results[0].score || 0)) {
-        alert("Please enter a valid score for player 1");
+        alert(lang.MATCH_VALID_SCORE1);
     }
     if (retval && parseInt('' + props.matchdata.results[1].score) < 0 || isNaN(props.matchdata.results[1].score || 0)) {
-        alert("Please enter a valid score for player 2");
+        alert(lang.MATCH_VALID_SCORE2);
     }
 
     if (retval) {
@@ -62,12 +63,12 @@ function submitForm()
                     emits('onSave');
                 }
                 else {
-                    alert("There was a problem storing this match's data. Please see if the data is allright and/or reload the page");
+                    alert(lang.ERROR_MATCH_SAVE);
                 }
             })
             .catch((e:any) => {
                 console.log(e);
-                alert("There was a network problem saving the data. Please try again or reload the page");
+                alert(lang.ERROR_NETWORK);
             });
     }
 }
@@ -91,46 +92,45 @@ function validPlayers()
         if (player.groupname && auth.currentGroup == 'all') return true;
         if (player.groupname == auth.currentGroup) return true;
         return false;
-    }).sort((a, b) => {
-        if (a.name == b.name) return a.id > b.id;
-        return a.name > b.name;
+    }).sort((a:Player, b:Player) => {
+        if (a.name == b.name) return a.id > b.id ? 1 : -1;
+        return a.name > b.name ? 1 : -1;
     });
 }
 
 import { ElDialog, ElForm, ElFormItem, ElInput, ElButton, ElSelect, ElOption } from 'element-plus';
 </script>
 <template>
-    <ElDialog :model-value="props.visible" title="Edit Match Information" :close-on-click-modal="false"  :before-close="(done) => { closeForm(); done(false); }">
+    <ElDialog :model-value="props.visible" title="{{ lang.DIALOG_MATCH }}" :close-on-click-modal="false"  :before-close="(done) => { closeForm(); done(false); }">
       <ElForm>
-        {{ props.matchdata.results[0] }} / {{ props.matchdata.results[1] }} / {{ props.matchdata.results[0].player_id }}
-        <ElFormItem label="Player 1">
+        <ElFormItem label="{{ lang.PLAYER1 }}">
           <ElSelect :model-value="modelValue('player_1')" @update:model-value="(e) => update('player_1', e)">
-            <ElOption value="0" label="Pick a player"/>
+            <ElOption value="0" label="{{ lang.PICKPLAYER }}"/>
             <ElOption v-for="player in validPlayers()" :key="player.id" :value="player.id" :label="player.name"/>
           </ElSelect>
         </ElFormItem>
-        <ElFormItem label="Player 2">
+        <ElFormItem label="{{ lang.PLAYER2 }}">
           <ElSelect :model-value="modelValue('player_2')" @update:model-value="(e) => update('player_2', e)">
-            <ElOption value="0" label="Pick a player"/>
+            <ElOption value="0" label="{{ lang.PICKPLAYER }}"/>
             <ElOption v-for="player in validPlayers()" :key="player.id" :value="player.id" :label="player.name"/>
           </ElSelect>
         </ElFormItem>
-        <ElFormItem label="Score Player 1">
+        <ElFormItem label="{{ lang.SCORE1 }}">
           <ElInput :model-value="props.matchdata.results[0].score || 0" @update:model-value="(e) => update('score_1', e)"/>
         </ElFormItem>
-        <ElFormItem label="Score Player 2">
+        <ElFormItem label="{{ lang.SCORE2}}">
           <ElInput :model-value="props.matchdata.results[1].score || 0" @update:model-value="(e) => update('score_2', e)"/>
         </ElFormItem>
-        <ElFormItem label="Date">
+        <ElFormItem label="{{ lang.MATCHDATE }}">
           <ElInput :model-value="props.matchdata.entered_at" @update:model-value="(e) => update('entered_at', e)"/>
         </ElFormItem>
       </ElForm>
       <template #footer>
         <span class="dialog-footer">
-          <ElButton type="warning" @click="removeMatch" v-if="is_valid(props.matchdata.id)">Remove</ElButton>
-          <ElButton type="warning" @click="closeForm">Cancel</ElButton>
-          <ElButton type="primary" @click="submitForm">Save</ElButton>
+          <ElButton type="warning" @click="removeMatch" v-if="is_valid(props.matchdata.id)">{{ lang.REMOVE }}</ElButton>
+          <ElButton type="warning" @click="closeForm">{{ lang.CANCEL }}</ElButton>
+          <ElButton type="primary" @click="submitForm">{{ lang.SAVE }}</ElButton>
         </span>
       </template>
     </ElDialog>
-</template>../lib/functions
+</template>

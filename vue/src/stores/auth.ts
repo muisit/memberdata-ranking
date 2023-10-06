@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import type { Ref } from 'vue';
 import { defineStore } from 'pinia'
 import { players, configuration as configurationAPI } from '@/lib/api';
+import lang from '@/lib/lang.js';
 
 export interface Player {
     id: number;
@@ -95,7 +96,7 @@ export const useAuthStore = defineStore('auth', () => {
             return playersList.value;
         })
         .catch((e:any) => {
-            alert('There was a problem retrieving the list of players. Please try again');
+            alert(lang.ERROR_PLAYERS);
         })
     }
 
@@ -157,8 +158,9 @@ export const useAuthStore = defineStore('auth', () => {
                         break;
                 }
 
-                if (v1 != v2) {
-                    console.log('comparing ', v1, v2, v1>v2, comp);
+                if (!v1 && v2) return -1*comp;
+                else if(v1 && !v2) return comp;
+                else if (v1 && v2 && v1 != v2) {
                     if (v1 > v2) return comp;
                     return -1 * comp;
                 }

@@ -5,6 +5,7 @@ import { matches, reassessMatches } from '@/lib/api';
 import type { FieldDefinition, Match, Result } from '@/stores/auth';
 import { useAuthStore } from '@/stores/auth';
 import { dayjs } from 'element-plus';
+import lang from '@/lib/lang.js';
 const props = defineProps<{
     visible:boolean;
 }>();
@@ -85,13 +86,12 @@ function reassess()
     reassessMatches()
         .then(() => {
             updateMatches();
-            alert("Matches reassessed");
+            alert(lang.MSG_REASSESSED);
         });
 }
 
 function getPlayersFromResults(matchData:Match)
 {
-    console.log('getting players from ', matchData);
     if (matchData.results && matchData.results.length == 2) {
         return getPlayerFromResult(matchData.results[0]) + ' vs ' + getPlayerFromResult(matchData.results[1]);
     }
@@ -108,7 +108,7 @@ function getPlayerFromResult(result:Result)
     if (auth.playerById[memberId]) {
         return auth.playerById[memberId].name + '(' + scorechange + ')';
     }
-    return 'N.N.';
+    return lang.UNKNOWNPLAYER;
 }
 
 function getScoreFromResults(matchData:Match)
@@ -121,7 +121,7 @@ function getScoreFromResults(matchData:Match)
 
 function formatMatchDate(dt:string)
 {
-    return dayjs(dt).format('YYYY-MM-DD HH:mm');
+    return dayjs(dt).format(lang.DATEFORMATWITHOUTMINUTES);
 }
 
 import MatchDialog from './MatchDialog.vue';
@@ -132,16 +132,16 @@ import GroupSelector from './GroupSelector.vue';
     <div>
         <div class="grid-header">
             <GroupSelector />
-            <ElButton @click="reassess" type="primary">Reassess</ElButton>
-            <ElButton @click="addNew" type="primary">Add</ElButton>
+            <ElButton @click="reassess" type="primary">{{ lang.REASSESS }}</ElButton>
+            <ElButton @click="addNew" type="primary">{{ lang.ADD }}</ElButton>
         </div>
         <div class="grid">
             <table>
                 <thead>
                     <tr>
-                        <th>Players</th>
-                        <th>Score</th>
-                        <th>Rank</th>
+                        <th>{{ lang.PLAYERS }}</th>
+                        <th>{{ lang.SCORE }}</th>
+                        <th>{{ lang.RANK }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -156,4 +156,4 @@ import GroupSelector from './GroupSelector.vue';
         </div>
         <MatchDialog :matchdata="matchValue" :visible="visible" @on-close="onClose" @on-save="onSave" @on-update="onUpdate"/>
     </div>
-</template>../lib/api
+</template>

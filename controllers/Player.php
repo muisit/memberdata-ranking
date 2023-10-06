@@ -26,53 +26,14 @@
 
 namespace MemberDataRanking\Controllers;
 
+use MemberDataRanking\Lib\Services\PlayerList;
+
 class Player extends Base
 {
     public function index($data)
     {
         $this->authenticate();
-        $eloconfig = self::getConfig();
-
-        $namefield = $eloconfig->namefield ?? null;
-        $groupingfield = $eloconfig->groupingfield ?? null;
-        $settings = [
-            "sorter" => $namefield,
-            "sortDirection" => 'asc'
-        ];
-        $result = \apply_filters('memberdata_find_members', $settings);
-        $attributes = \apply_filters('memberdata_configuration', []);
-        $attribute = null;
-        foreach ($attributes as $a) {
-            if ($a['type'] == 'rank') {
-                $attribute = $a;
-                break;
-            }
-        }
-
-        $data = [];
-        foreach ($result['list'] as $member) {
-            $row = [
-                'id' => $member['id'],
-                'rank' => 1000,
-            ];
-            if (!empty($namefield) && isset($member[$namefield])) {
-                $row['name'] = $member[$namefield];
-            }
-            if (!empty($groupingfield) && isset($member[$groupingfield])) {
-                $row['groupname'] = $member[$groupingfield];
-            }
-
-            if ($attribute != null) {
-                $row['rank'] = intval($member[$attribute['name']] ?? $eloconfig->base_rank);
-            }
-            $data[] = $row;
-        }
-        usort($data, function ($a, $b) {
-            if ($a['rank'] == $b['rank']) {
-                return ($a['name'] ?? $a['id']) <=> ($b['name'] ?? $b['id']);
-            }
-            return -1 * ($a['rank'] <=> $b['rank']);
-        });
+        $data = PlayerList::listPlayers();
         return $data;
     }
 }

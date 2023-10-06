@@ -1,21 +1,18 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
-import type { Ref } from 'vue';
+import { watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
-import type { Player, FieldDefinition } from '@/stores/auth';
+import lang from '@/lib/lang.js';
 const props = defineProps<{
     visible:boolean;
 }>();
 
 const auth = useAuthStore();
-const player:Ref<Player> = ref({id: 0, name: '', rank: 1000});
-const visible = ref(false);
 
 watch(
     () => props.visible,
     (nw) => {
         if (nw) {
-            if (!auth.configuration.groupingvalues?.includes(auth.currentGroup) && auth.configuration.groupingvalues.length) {
+            if (!auth.configuration.groupingvalues?.includes(auth.currentGroup) && auth.configuration.groupingvalues?.length) {
                 auth.currentGroup = 'all';
             }
             auth.getPlayers();
@@ -23,17 +20,6 @@ watch(
     },
     { immediate: true}
 )
-
-function onClose()
-{
-    visible.value = false;
-    auth.updatePlayerInList(player.value);
-    auth.sortPlayers('gRni');
-}
-
-function onUpdate(fieldDef:FieldDefinition)
-{
-}
 
 function filterPlayers()
 {
@@ -45,7 +31,6 @@ function filterPlayers()
 }
 
 import GroupSelector from './GroupSelector.vue';
-import PlayerDialog from './PlayerDialog.vue';
 import { ElButton, ElSelect, ElOption } from 'element-plus';
 </script>
 <template>
@@ -57,13 +42,13 @@ import { ElButton, ElSelect, ElOption } from 'element-plus';
             <table>
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Group</th>
-                        <th>Rank</th>
+                        <th>{{ lang.NAME }}</th>
+                        <th>{{ lang.GROUP }}</th>
+                        <th>{{ lang.RANK }}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="playerData in filterPlayers()" :key="playerData.id" @dblclick="() => { player = playerData; visible = true;}">
+                    <tr v-for="playerData in filterPlayers()" :key="playerData.id">
                         <td>{{ playerData.name }}</td>
                         <td>{{ playerData.groupname }}</td>
                         <td>{{ playerData.rank }}</td>
@@ -71,6 +56,5 @@ import { ElButton, ElSelect, ElOption } from 'element-plus';
                 </tbody>
             </table>
         </div>
-        <PlayerDialog :player="player" :visible="visible" @on-close="onClose" @on-update="onUpdate" />
     </div>
 </template>

@@ -1,8 +1,8 @@
-export function pad(number) {
-    if (number < 10) {
-        return '0' + number;
+export function pad(nm:number) {
+    if (nm < 10) {
+        return '0' + nm;
     }
-    return number;
+    return nm;
 }
 
 export function is_valid(id:any) {

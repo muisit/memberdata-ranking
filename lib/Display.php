@@ -28,6 +28,7 @@ namespace MemberDataRanking\Lib;
 
 use MemberData\Controllers\Base;
 use MemberData\Lib\Services\ManifestService;
+use MemberDataRanking\Lib\Services\PlayerList;
 
 class Display
 {
@@ -36,7 +37,7 @@ class Display
 
     public static function adminPage()
     {
-        ManifestService::enqueueAssets(self::ADMINSCRIPT, self::PACKAGENAME, __DIR__ . '/../dist');
+        ManifestService::enqueueAssets(self::ADMINSCRIPT, self::PACKAGENAME, __DIR__ . '/../dist', 'memberdata-ranking');
         $nonce = wp_create_nonce(Base::createNonceText());
         $data = [
             "nonce" => $nonce,
@@ -50,7 +51,7 @@ class Display
 HEREDOC;
     }
 
-    public static function frontendPage()
+    public static function addFrontEnd()
     {
         $nonce = wp_create_nonce(Base::createNonceText());
         $data = [
@@ -65,10 +66,60 @@ HEREDOC;
 HEREDOC;
     }
 
+    public static function addRankingListOutput($attributes = [])
+    {
+        $labelName = esc_html_x('Name', 'noun', 'memberdata-ranking');
+        $labelGroup = esc_html_x('Group', 'noun', 'memberdata-ranking');
+        $labelPoints = esc_html__('Points', 'memberdata-ranking');
+
+        // allow a group name as attribute
+        $groupname = "all";
+        if (is_array($attributes) && count($attributes)) {
+            $groupname = reset($attributes);
+        }
+        $data = PlayerList::listPlayers($groupname);
+        $tablerows = "";
+        $pos = 0;
+        $realpos = 0;
+        $lastrank = -1;
+        foreach ($data as $row) {
+            $name = $row['name'] ?? 'N.N.';
+            $group = $groupname == 'all' ? ($row['groupname'] ?? null) : null;
+            $rank = $row['rank'];
+
+            $realpos += 1;
+            if ($lastrank < 0 || $lastrank != $rank) {
+                $pos = $realpos;
+            }
+
+            $tablerows .= <<<HEREDOC
+              <tr><td class='pos'>$pos</td><td class='player-name'>$name</td><td class='group-name'>$group</td><td class='rank'>$rank</td></tr>
+            HEREDOC;
+        }
+
+        return <<<HEREDOC
+        <table class='memberdata-ranking-list'>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>$labelName</th>
+                    <th>$labelGroup</th>
+                    <th>$labelPoints</th>
+                </tr>
+            </thead>
+            <tbody>
+              $tablerows
+            </tbody>
+        </table>
+        HEREDOC;
+    }
+
     public static function register($plugin)
     {
-        //add_action('admin_enqueue_scripts', fn($page) => ManifestService::scripts($page, self::PACKAGENAME, self::ADMINSCRIPT, __DIR__ . '/../dist'));
+        load_plugin_textdomain('memberdata-ranking', false, basename(dirname(__DIR__)) . '/languages');
         add_action('admin_menu', fn() => self::adminMenu());
+        add_shortcode('memberdata-ranking-list', fn($a) => self::addRankingListOutput($a));
+        add_shortcode('memberdata-ranking', fn() => self::addFrontEnd());
     }
 
     private static function adminMenu()

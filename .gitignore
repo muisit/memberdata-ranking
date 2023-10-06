@@ -17,3 +17,8 @@ vendor
 # environment
 .env
 
+# generatable language files
+languages/*.pot
+languages/*.mo
+languages/*.json
+

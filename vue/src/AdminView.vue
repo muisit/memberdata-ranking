@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { useAuthStore } from './stores/auth';
+import lang from '@/lib/lang.js';
 const props = defineProps<{
     nonce:string;
     url:string;
@@ -20,11 +21,11 @@ import ConfigView from './components/ConfigView.vue';
 </script>
 <template>
   <div>
-    <h1>ELO Ranking Manager</h1>
+    <h1>{{ lang.ADMIN_PAGE }}</h1>
     <ElTabs v-model="tabindex">
-      <ElTabPane label="Matches" name="matches"><MatchView :visible="tabindex == 'matches'"/></ElTabPane>
-      <ElTabPane label="Ranking" name="ranking"><PlayersView :visible="tabindex == 'ranking'"/></ElTabPane>
-      <ElTabPane label="Settings" name="settings"><ConfigView :visible="tabindex == 'settings'"/></ElTabPane>
+      <ElTabPane :label="lang.TAB_MATCHES" name="matches"><MatchView :visible="tabindex == 'matches'"/></ElTabPane>
+      <ElTabPane :label="lang.TAB_RANKING" name="ranking"><PlayersView :visible="tabindex == 'ranking'"/></ElTabPane>
+      <ElTabPane :label="lang.TAB_SETTINGS" name="settings"><ConfigView :visible="tabindex == 'settings'"/></ElTabPane>
     </ElTabs>
   </div>
 </template>
