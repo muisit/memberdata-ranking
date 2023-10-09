@@ -1,9 +1,9 @@
 import { ref } from 'vue'
 import type { Ref } from 'vue';
 import { defineStore } from 'pinia'
-import { players, configuration as configurationAPI } from '@/lib/api';
+import { players, configuration as configurationAPI, basicSettings } from '@/lib/api';
 import lang from '@/lib/lang';
-import type {Configuration, Player, PlayerById } from '@/lib/types';
+import type {Configuration, Player, PlayerById, Sheet } from '@/lib/types';
 
 export const useAuthStore = defineStore('auth', () => {
     const nonce = ref('');
@@ -12,20 +12,32 @@ export const useAuthStore = defineStore('auth', () => {
     const playerById:Ref<PlayerById> = ref({});
     const currentGroup = ref('all');
     const configuration:Ref<Configuration> = ref({validgroups:[]});
+    const sheets:Ref<Array<Sheet>> = ref([]);
+    const attributes:Ref<Array<string>> = ref([]);
+    const groupingvalues:Ref<Array<string>> = ref([]);
 
     function getConfiguration()
     {
-        configurationAPI().then((data:any) => {
+        return configurationAPI().then((data:any) => {
             configuration.value.base_rank = '' + (data.data.base_rank || 1000);
             configuration.value.k_value = '' + (data.data.k_value || 32);
             configuration.value.c_value = '' + (data.data.c_value || 400);
-            configuration.value.attributes = data.data.attributes || [];
             configuration.value.namefield = data.data.namefield || '';
             configuration.value.groupingfield = data.data.groupingfield || 'none';
-            configuration.value.groupingvalues = data.data.groupingvalues || [];
             configuration.value.validgroups = data.data.validgroups || [];
+            configuration.value.sheet = data.data.sheet || 0;
         });
     }
+
+    function getBasicSettings(sheet:number, groupingfield:string)
+    {
+        return basicSettings(sheet, groupingfield).then((data:any) => {
+            attributes.value = data.data.attributes || [];
+            groupingvalues.value = data.data.groupingvalues || [];
+            sheets.value = data.data.sheets || [];
+        });
+    }
+
 
     function getPlayers()
     {
@@ -122,8 +134,8 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     return { 
-        nonce, baseUrl, currentGroup, configuration,
-        getConfiguration,
+        nonce, baseUrl, currentGroup, configuration, attributes, sheets, groupingvalues,
+        getConfiguration, getBasicSettings,
         getPlayers, updatePlayerInList, sortPlayers, playersList, playerById
     }
 })

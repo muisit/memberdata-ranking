@@ -34,6 +34,7 @@ class API extends \MemberData\Lib\API
 {
     protected $routes = [
         'configuration.post' => [Configuration::class, 'index'],
+        'configuration.basic.post' => [Configuration::class, 'basic'],
         'configuration.save.post' => [Configuration::class, 'save'],
         'player.post' => [Player::class, 'index'],
         'match.post' => [Matches::class, 'index'],

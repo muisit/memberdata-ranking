@@ -14,14 +14,41 @@ watch(
     (nw) => {
         if (nw) {
             auth.getConfiguration();
+            auth.getBasicSettings(auth.configuration.sheet || 0, auth.configuration.groupingfield || '');
         }
     },
     { immediate: true }
 )
 
+watch(
+    () => auth.configuration.sheet,
+    (nw) => {
+        if (props.visible) {
+          auth.getBasicSettings(nw || 0, '').then(() => {
+              auth.configuration.namefield = '';
+              auth.configuration.groupingfield = '';
+              auth.configuration.validgroups = [];
+          });
+        }
+    }
+)
+
+watch(
+    () => auth.configuration.groupingfield,
+    (nw) => {      
+      if (props.visible && nw != '') {
+          auth.getBasicSettings(auth.configuration.sheet || 0, nw || '')
+            .then(() => {
+                auth.configuration.validgroups = auth.configuration.validgroups.filter((n) => {
+                    return auth.groupingvalues.includes(n);
+                });
+            });
+        }
+    }
+)
+
 function markValidGroup(onoff:boolean, groupname:string)
 {
-    console.log(onoff, groupname);
     if (onoff && !auth.configuration.validgroups.includes(groupname)) {
         auth.configuration.validgroups?.push(groupname);
     }
@@ -32,9 +59,8 @@ function markValidGroup(onoff:boolean, groupname:string)
 
 function saveConfig()
 {
-    saveconfiguration(auth.configuration).then((data:any) => {
+    return saveconfiguration(auth.configuration).then((data:any) => {
         auth.configuration = data.data;
-        alert(lang.CONFIG_SAVED);
     });
 }
 import { ElButton, ElInput, ElSelect, ElOption, ElCheckbox } from 'element-plus';
@@ -77,10 +103,20 @@ import { ElButton, ElInput, ElSelect, ElOption, ElCheckbox } from 'element-plus'
       </tr>
       <tr><td colspan="2"><hr></td></tr>
       <tr>
+        <td valign="top">{{ lang.SHEET }}</td>
+        <td valign="top">
+          <ElSelect :model-value="auth.configuration.sheet" @update:model-value="(e) => auth.configuration.sheet = e">
+            <ElOption :label="lang.SHEETSELECT" :value="0"/>
+            <ElOption v-for="sht in auth.sheets" :key="sht.id" :label="sht.name" :value="parseInt(sht.id)"/>
+          </ElSelect>
+        </td>
+        <td>{{ lang.NAME_INFO }}</td>
+      </tr>
+      <tr>
         <td valign="top">{{ lang.NAME }}</td>
         <td valign="top">
           <ElSelect :model-value="auth.configuration.namefield" @update:model-value="(e) => auth.configuration.namefield = e">
-            <ElOption v-for="name in auth.configuration.attributes" :key="name" :label="name" :value="name"/>
+            <ElOption v-for="name in auth.attributes" :key="name" :label="name" :value="name"/>
           </ElSelect>
         </td>
         <td>{{ lang.NAME_INFO }}</td>
@@ -90,7 +126,7 @@ import { ElButton, ElInput, ElSelect, ElOption, ElCheckbox } from 'element-plus'
         <td valign="top">
           <ElSelect :model-value="auth.configuration.groupingfield || ''" @update:model-value="(e) => auth.configuration.groupingfield = e">
             <ElOption label="No grouping" value="none"/>
-            <ElOption v-for="name in auth.configuration.attributes" :key="name" :label="name" :value="name"/>
+            <ElOption v-for="name in auth.attributes" :key="name" :label="name" :value="name"/>
           </ElSelect>
         </td>
         <td>{{ lang.GROUP_INFO }}</td>
@@ -98,7 +134,7 @@ import { ElButton, ElInput, ElSelect, ElOption, ElCheckbox } from 'element-plus'
       <tr>
         <td valign="top">{{  lang.GROUPS }}</td>
         <td valign="top">
-          <div v-for="name in auth.configuration.groupingvalues" :key="name || ''" class="selectlist">
+          <div v-for="name in auth.groupingvalues" :key="name || ''" class="selectlist">
               <ElCheckbox 
                 v-if="name != null"
                 :model-value="auth.configuration.validgroups?.includes(name || 'none')"

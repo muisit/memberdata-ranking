@@ -72,7 +72,7 @@ class MatchAssessor
 
     private static function doAssessment(MemberMatch $matchModel, Result $result1, Result $result2)
     {
-        $config = Base::getConfig();
+        $config = Base::getRankConfig();
         $totalScore = $result1->score + $result2->score;
         $maxScore = 2 * max($result1->score, $result2->score);
 

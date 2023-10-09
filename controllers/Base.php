@@ -31,7 +31,7 @@ use MemberDataRanking\Lib\Display;
 
 class Base extends BaseController
 {
-    public static function getConfig()
+    public static function getRankConfig()
     {
         $eloconfig = json_decode(get_option(Display::PACKAGENAME . "_values"));
         if (empty($eloconfig)) {
@@ -42,7 +42,8 @@ class Base extends BaseController
                 'l_value' => 32,
                 's_value' => 16,
                 'namefield' => '',
-                'groupingfield' => 'none'
+                'groupingfield' => 'none',
+                'sheet' => 0
             ];
             add_option(Display::PACKAGENAME . '_values', json_encode($eloconfig));
         }

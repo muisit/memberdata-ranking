@@ -33,10 +33,7 @@ class Configuration extends Base
     public function index()
     {
         $this->authenticate();
-        $eloconfig = self::getConfig();
-        $attributes = \apply_filters('memberdata_configuration', []);
-        $groupvalues = \apply_filters('memberdata_values', ["field" => $eloconfig->groupingfield]);
-
+        $eloconfig = self::getRankConfig();
         $data = [
             "base_rank" => $eloconfig->base_rank ?? 1000,
             "k_value" => $eloconfig->k_value ?? 32,
@@ -45,23 +42,42 @@ class Configuration extends Base
             "s_value" => $eloconfig->s_value ?? 16,
             "namefield" => $eloconfig->namefield ?? '',
             "groupingfield" => $eloconfig->groupingfield ?? '',
-            "groupingvalues" => $groupvalues['result'] ?? [],
-            "attributes" => array_column($attributes, 'name'),
             "validgroups" => $eloconfig->validgroups ?? [],
+            "sheet" => $eloconfig->sheet ?? 0
         ];
         return $data;
+    }
+
+    public function basic($data)
+    {
+        $sheet = intval($data['model']['sheet'] ?? 0);
+        $field = $data['model']['groupingfield'] ?? '';
+        $configuration = \apply_filters('memberdata_configuration', ['sheet' => $sheet, 'configuration' => []]);
+        $attributes = $configuration['configuration'];
+        $groupvalues = \apply_filters('memberdata_values', ['sheet' => $sheet, "field" => $field, 'values' => []]);
+        $sheets = \apply_filters('memberdata_find_sheets', []);
+
+        return [
+            "groupingvalues" => $groupvalues['values'] ?? [],
+            "attributes" => array_column($attributes, 'name'),
+            "sheets" => $sheets,
+        ];
     }
 
     public function save($data)
     {
         $this->authenticate();
-        $eloconfig = self::getConfig();
-        $attributes = \apply_filters('memberdata_configuration', []);
-        $names = array_column($attributes, 'name');
+        $eloconfig = self::getRankConfig();
+        $sheet = intval($eloconfig->sheet ?? 0);
 
         $eloconfig->base_rank = intval($data['model']['base_rank'] ?? 1000);
         $eloconfig->k_value = intval($data["model"]["k_value"] ?? 32);
         $eloconfig->c_value  = intval($data["model"]["c_value"] ?? 400);
+        $eloconfig->sheet = intval($data['model']['sheet'] ?? 0);
+
+        $configuration = \apply_filters('memberdata_configuration', ['sheet' => $sheet, 'configuration' => []]);
+        $attributes = $configuration['configuration'];
+        $names = array_column($attributes, 'name');
 
         $namefield = $data['model']['namefield'] ?? '';
         $eloconfig->namefield = '';
@@ -75,11 +91,11 @@ class Configuration extends Base
             $eloconfig->groupingfield = $groupingfield;
         }
 
-        $groupvalues = \apply_filters('memberdata_values', ["field" => $eloconfig->groupingfield]);
+        $groupvalues = \apply_filters('memberdata_values', ["sheet" => $sheet, "field" => $eloconfig->groupingfield, 'values' => []]);
         $values = $data['model']['validgroups'] ?? [];
         $validvalues = [];
         foreach ($values as $v) {
-            if (in_array($v, $groupvalues['result'] ?? [])) {
+            if (in_array($v, $groupvalues['values'] ?? [])) {
                 $validvalues[] = $v;
             }
         }

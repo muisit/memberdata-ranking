@@ -15,17 +15,27 @@ export interface FieldDefinition {
     value: string;
 }
 
+export interface Sheet {
+    id: number;
+    name: string;
+}
+
 export interface Configuration {
     base_rank?: string;
     s_value?: string;
     c_value?: string;
     k_value?: string;
     l_value?: string;
-    attributes?: Array<string>;
     namefield?: string;
     groupingfield?: string|null;
-    groupingvalues?: Array<string|null>;
     validgroups: Array<string>;
+    sheet?: number;
+}
+
+export interface BasicSettings {
+    attributes?: Array<string>;
+    sheets?: Array<Sheet>;
+    groupingvalues?: Array<string|null>;
 }
 
 export interface Result {

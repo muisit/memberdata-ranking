@@ -14,6 +14,8 @@ export default {
     KVALUE_INFO: __('The K-value determines the amount of points a participant receives or loses at most when they win a match. This number is adjusted according to the actual result with respect to the expected result. The default value is 32.', 'memberdata-ranking'),
     CVALUE: __('C-value', 'memberdata-ranking'),
     CVALUE_INFO: __('The C-value determines the factor with which expectations are compared. Large C values make it more difficult to determine an expected score difference between two fencers (everyone seems to be of more or less the same rank), whereas small C-values exagerate small ranking differences and will cause people to continuously switch after entering match results. The default value is 400.', 'memberdata-ranking'),
+    SHEET: __('Sheet', 'memberdata-ranking'),
+    SHEETSELECT: __('Select a sheet', 'memberdata-ranking'),
     NAME: __('Name', 'memberdata-ranking'),
     NAME_INFO: __('Select the attribute to use as name field', 'memberdata-ranking'),
     GROUP: __('Group', 'memberdata-ranking'),

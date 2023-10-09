@@ -32,13 +32,14 @@ class PlayerList
 {
     public static function listPlayers($groupname = 'all')
     {
-        $eloconfig = Base::getConfig();
+        $eloconfig = Base::getRankConfig();
         $namefield = $eloconfig->namefield ?? null;
         $groupingfield = $eloconfig->groupingfield ?? null;
 
         $settings = [
             "sorter" => $namefield,
-            "sortDirection" => 'asc'
+            "sortDirection" => 'asc',
+            'sheet' => $eloconfig->sheet
         ];
 
         if (!empty($groupingfield) && $groupname != 'all')

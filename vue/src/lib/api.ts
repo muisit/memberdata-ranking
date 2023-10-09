@@ -122,6 +122,10 @@ export function configuration(): Promise<APIResult> {
     return fetchJson('configuration');
 }
 
+export function basicSettings(sheet:number, groupingfield:string): Promise<APIResult> {
+    return fetchJson('configuration/basic', {sheet: sheet, groupingfield: groupingfield});
+}
+
 export function saveconfiguration(data:any): Promise<APIResult> {
     return fetchJson('configuration/save', data);
 }
