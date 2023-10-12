@@ -52,9 +52,6 @@ class Activator
     {
         update_option(self::CONFIG, 'new');
         self::update();
-
-        $role = get_role('administrator');
-        $role->add_cap('manage_wpelo', true);
     }
 
     public static function upgrade()

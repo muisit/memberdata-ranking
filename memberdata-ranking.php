@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WP-Elo
+ * MemberData Ranking
  *
  * @package             memberdata-ranking
  * @author              Michiel Uitdehaag

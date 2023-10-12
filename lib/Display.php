@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MemberData=Ranking page display routines
+ * MemberData-Ranking page display routines
  *
  * @package             memberdata-ranking
  * @author              Michiel Uitdehaag

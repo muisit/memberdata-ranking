@@ -2,7 +2,7 @@
 
 /**
  * MemberData-Ranking Plugin Interface
- * 
+ *
  * @package             memberdata-ranking
  * @author              Michiel Uitdehaag
  * @copyright           2020 - 2023 Michiel Uitdehaag for muis IT
@@ -29,7 +29,7 @@ namespace MemberDataRanking\Lib;
 use MemberDataRanking\Models\MemberMatch;
 use MemberDataRanking\Lib\Services\MatchAssessor;
 use MemberData\Models\Member;
-use MemberData\Models\Result;
+use MemberDataRanking\Models\Result;
 
 class Plugin
 {
