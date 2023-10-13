@@ -100,27 +100,27 @@ function validPlayers()
 import { ElDialog, ElForm, ElFormItem, ElInput, ElButton, ElSelect, ElOption } from 'element-plus';
 </script>
 <template>
-    <ElDialog :model-value="props.visible" title="{{ lang.DIALOG_MATCH }}" :close-on-click-modal="false"  :before-close="(done) => { closeForm(); done(false); }">
+    <ElDialog :model-value="props.visible" :title="lang.DIALOG_MATCH" :close-on-click-modal="false"  :before-close="(done) => { closeForm(); done(false); }">
       <ElForm>
-        <ElFormItem label="{{ lang.PLAYER1 }}">
+        <ElFormItem :label="lang.PLAYER1">
           <ElSelect :model-value="modelValue('player_1')" @update:model-value="(e) => update('player_1', e)">
-            <ElOption value="0" label="{{ lang.PICKPLAYER }}"/>
+            <ElOption value="0" :label="lang.PICKPLAYER"/>
             <ElOption v-for="player in validPlayers()" :key="player.id" :value="player.id" :label="player.name"/>
           </ElSelect>
         </ElFormItem>
-        <ElFormItem label="{{ lang.PLAYER2 }}">
+        <ElFormItem :label="lang.PLAYER2">
           <ElSelect :model-value="modelValue('player_2')" @update:model-value="(e) => update('player_2', e)">
-            <ElOption value="0" label="{{ lang.PICKPLAYER }}"/>
+            <ElOption value="0" :label="lang.PICKPLAYER"/>
             <ElOption v-for="player in validPlayers()" :key="player.id" :value="player.id" :label="player.name"/>
           </ElSelect>
         </ElFormItem>
-        <ElFormItem label="{{ lang.SCORE1 }}">
+        <ElFormItem :label="lang.SCORE1">
           <ElInput :model-value="props.matchdata.results[0].score || 0" @update:model-value="(e) => update('score_1', e)"/>
         </ElFormItem>
-        <ElFormItem label="{{ lang.SCORE2}}">
+        <ElFormItem :label="lang.SCORE2">
           <ElInput :model-value="props.matchdata.results[1].score || 0" @update:model-value="(e) => update('score_2', e)"/>
         </ElFormItem>
-        <ElFormItem label="{{ lang.MATCHDATE }}">
+        <ElFormItem :label="lang.MATCHDATE">
           <ElInput :model-value="props.matchdata.entered_at" @update:model-value="(e) => update('entered_at', e)"/>
         </ElFormItem>
       </ElForm>
