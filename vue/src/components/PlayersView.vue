@@ -12,7 +12,7 @@ watch(
     () => props.visible,
     (nw) => {
         if (nw) {
-            if (!auth.configuration.groupingvalues?.includes(auth.currentGroup) && auth.configuration.groupingvalues?.length) {
+            if (!auth.groupingvalues?.includes(auth.currentGroup) && auth.groupingvalues?.length) {
                 auth.currentGroup = 'all';
             }
             auth.getPlayers();

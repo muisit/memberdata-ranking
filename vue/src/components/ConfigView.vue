@@ -105,9 +105,9 @@ import { ElButton, ElInput, ElSelect, ElOption, ElCheckbox } from 'element-plus'
       <tr>
         <td valign="top">{{ lang.SHEET }}</td>
         <td valign="top">
-          <ElSelect :model-value="auth.configuration.sheet" @update:model-value="(e) => auth.configuration.sheet = e">
+          <ElSelect :model-value="'' + auth.configuration.sheet" @update:model-value="(e) => auth.configuration.sheet = parseInt(e)">
             <ElOption :label="lang.SHEETSELECT" :value="0"/>
-            <ElOption v-for="sht in auth.sheets" :key="sht.id" :label="sht.name" :value="parseInt(sht.id)"/>
+            <ElOption v-for="sht in auth.sheets" :key="sht.id" :label="sht.name" :value="'' + sht.id"/>
           </ElSelect>
         </td>
         <td>{{ lang.NAME_INFO }}</td>

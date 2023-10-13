@@ -42,15 +42,15 @@ class PlayerList
             'sheet' => $eloconfig->sheet
         ];
 
-        if (!empty($groupingfield) && $groupname != 'all')
-        {
+        if (!empty($groupingfield) && $groupname != 'all') {
             $settings["filter"] = [
                 $groupingfield => [ "values" => [$groupname]]
             ];
         }
         $result = \apply_filters('memberdata_find_members', $settings);
 
-        $attributes = \apply_filters('memberdata_configuration', []);
+        $config = \apply_filters('memberdata_configuration', ['sheet' => $eloconfig->sheet]);
+        $attributes = $config['configuration'] ?? [];
         $attribute = null;
         foreach ($attributes as $a) {
             if ($a['type'] == 'rank') {
