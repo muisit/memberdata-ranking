@@ -47,214 +47,214 @@ msgstr "Groep"
 msgid "Points"
 msgstr "Punten"
 
-#: dist/assets/admin-843bfb1e.js:15
+#: dist/assets/admin-f4e3f522.js:15
 msgid "The formula used is as follows. Given a match between two participants A and B, scoring Pa points (participant A) and Pb points (participant B), and given the original ranking Ra and Rb and the configuration values below:"
 msgstr "De formule wordt als volgt gebruikt. Gegeven een partij tussen twee spelers A en B, met score Pa voor speler A en score Pb voor speler B, en gegeven de oorspronkelijke ranking Ra en Rb, met de configuratie hieronder:"
 
-#: dist/assets/admin-843bfb1e.js:17
+#: dist/assets/admin-f4e3f522.js:17
 msgid "Please adjust the configuration settings as you seem fit."
 msgstr "Pas de configuratiewaarden aan naar eigen inzicht"
 
-#: dist/assets/admin-843bfb1e.js:18
+#: dist/assets/admin-f4e3f522.js:18
 msgid "Rank base"
 msgstr "Basisranking"
 
-#: dist/assets/admin-843bfb1e.js:19
+#: dist/assets/admin-f4e3f522.js:19
 msgid "The base rank is the starting value for new participants. Default value of 1000."
 msgstr "De basisranking is de startwaarde voor nieuwe spelers. Standaardwaarde is 1000."
 
-#: dist/assets/admin-843bfb1e.js:20
+#: dist/assets/admin-f4e3f522.js:20
 msgid "K-value"
 msgstr "K-waarde"
 
-#: dist/assets/admin-843bfb1e.js:21
+#: dist/assets/admin-f4e3f522.js:21
 msgid "The K-value determines the amount of points a participant receives or loses at most when they win a match. This number is adjusted according to the actual result with respect to the expected result. The default value is 32."
 msgstr "De K-waarde bepaalt het aantal punten dat een speler maximaal ontvangt of verliest na een partij. Deze waarde wordt aangepast aan de hand van het verschil tussen daadwerkelijk resultaat en verwacht resultaat. De standaardwaarde is 32."
 
-#: dist/assets/admin-843bfb1e.js:22
+#: dist/assets/admin-f4e3f522.js:22
 msgid "C-value"
 msgstr "C-waarde"
 
-#: dist/assets/admin-843bfb1e.js:23
+#: dist/assets/admin-f4e3f522.js:23
 msgid "The C-value determines the factor with which expectations are compared. Large C values make it more difficult to determine an expected score difference between two fencers (everyone seems to be of more or less the same rank), whereas small C-values exagerate small ranking differences and will cause people to continuously switch after entering match results. The default value is 400."
 msgstr "De C-waarde bepaalt de factor waarmee verwachte waardes worden vergeleken. Grote C-waardes maken het moeilijk om onderscheid te maken tussen twee spelers op basis van ranking (iedereen lijkt min of meer dezelfde ranking te hebben). Kleine C-waardes zorgen voor het heen-en-weer verplaatsen van spelers bij partijen met kleine ranglijstverschillen."
 
-#: dist/assets/admin-843bfb1e.js:26
+#: dist/assets/admin-f4e3f522.js:26
 msgid "Name"
 msgstr "Naam"
 
-#: dist/assets/admin-843bfb1e.js:27
+#: dist/assets/admin-f4e3f522.js:27
 msgid "Select the attribute to use as name field"
 msgstr "Kies het attribuut om te gebruiken als naam"
 
-#: dist/assets/admin-843bfb1e.js:28
+#: dist/assets/admin-f4e3f522.js:28
 msgid "Group"
 msgstr "Groep"
 
-#: dist/assets/admin-843bfb1e.js:29
+#: dist/assets/admin-f4e3f522.js:29
 msgid "Select the attribute to use as a grouping field"
 msgstr "Kies het attribuut om te gebruiken als groepering"
 
-#: dist/assets/admin-843bfb1e.js:30
+#: dist/assets/admin-f4e3f522.js:30
 msgid "Values"
 msgstr "Groepen"
 
-#: dist/assets/admin-843bfb1e.js:31
+#: dist/assets/admin-f4e3f522.js:31
 msgid "Select the valid groups"
 msgstr "Selecteer de geldige groepen"
 
-#: dist/assets/admin-843bfb1e.js:33
+#: dist/assets/admin-f4e3f522.js:33
 msgid "Save"
 msgstr "Opslaan"
 
-#: dist/assets/admin-843bfb1e.js:11
+#: dist/assets/admin-f4e3f522.js:11
 msgid "ELO Ranking Manager"
 msgstr "ELO Ranglijst Manager"
 
-#: dist/assets/admin-843bfb1e.js:12
+#: dist/assets/admin-f4e3f522.js:12
 msgid "Matches"
 msgstr ""
 
-#: dist/assets/admin-843bfb1e.js:13
+#: dist/assets/admin-f4e3f522.js:13
 msgid "Ranking"
 msgstr "Ranglijst"
 
-#: dist/assets/admin-843bfb1e.js:14
+#: dist/assets/admin-f4e3f522.js:14
 msgid "Settings"
 msgstr "Configuratie"
 
-#: dist/assets/admin-843bfb1e.js:16
+#: dist/assets/admin-f4e3f522.js:16
 msgid "with Va = 1 if A wins and Va = 0 if A loses"
 msgstr "met Va = 1 als A wint en Va = 0 als A verliest"
 
-#: dist/assets/admin-843bfb1e.js:32
+#: dist/assets/admin-f4e3f522.js:32
 msgid "Configuration saved"
 msgstr "Configuratie opgeslagen"
 
-#: dist/assets/admin-843bfb1e.js:34
+#: dist/assets/admin-f4e3f522.js:34
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: dist/assets/admin-843bfb1e.js:35
+#: dist/assets/admin-f4e3f522.js:35
 msgid "Remove"
 msgstr "Verwijderen"
 
-#: dist/assets/admin-843bfb1e.js:36
+#: dist/assets/admin-f4e3f522.js:36
 msgid "All"
 msgstr "Alle"
 
-#: dist/assets/admin-843bfb1e.js:37
+#: dist/assets/admin-f4e3f522.js:37
 msgid "Reassess"
 msgstr "Herberekenen"
 
-#: dist/assets/admin-843bfb1e.js:38
+#: dist/assets/admin-f4e3f522.js:38
 msgid "Add"
 msgstr "Toevoegen"
 
-#: dist/assets/admin-843bfb1e.js:39
+#: dist/assets/admin-f4e3f522.js:39
 msgid "Matches reassessed"
 msgstr "Ranking herberekend"
 
-#: dist/assets/admin-843bfb1e.js:40
+#: dist/assets/admin-f4e3f522.js:40
 msgid "Are you sure you want to remove this match permanently?"
 msgstr "Weet je zeker dat je deze match permanent wil verwijderen?"
 
-#: dist/assets/admin-843bfb1e.js:41
+#: dist/assets/admin-f4e3f522.js:41
 msgid "Please pick a valid player for player 1"
 msgstr "Kies een geldige speler voor speler 1"
 
-#: dist/assets/admin-843bfb1e.js:42
+#: dist/assets/admin-f4e3f522.js:42
 msgid "Please pick a valid player for player 2"
 msgstr "Kies een geldige speler voor speler 2"
 
-#: dist/assets/admin-843bfb1e.js:43
+#: dist/assets/admin-f4e3f522.js:43
 msgid "Person cannot score against him/herself"
 msgstr "Speler kan niet tegen zichzelf spelen"
 
-#: dist/assets/admin-843bfb1e.js:44
+#: dist/assets/admin-f4e3f522.js:44
 msgid "Please enter a valid date or date-time for the match"
 msgstr "Kies een geldige datum of datum-tijd voor de match"
 
-#: dist/assets/admin-843bfb1e.js:45
+#: dist/assets/admin-f4e3f522.js:45
 msgid "Please enter a valid score for player 1"
 msgstr "Voer een geldige score in voor speler 1"
 
-#: dist/assets/admin-843bfb1e.js:46
+#: dist/assets/admin-f4e3f522.js:46
 msgid "Please enter a valid score for player 2"
 msgstr "Voer een geldige score in voor speler 2"
 
-#: dist/assets/admin-843bfb1e.js:47
+#: dist/assets/admin-f4e3f522.js:47
 msgid "There was a problem storing this match's data. Please see if the data is allright and/or reload the page"
 msgstr "Er was een probleem met het opslaan van de matchgegevens. Controleer a.u.b. of de data correct is en/of herlaad de pagina"
 
-#: dist/assets/admin-843bfb1e.js:48
+#: dist/assets/admin-f4e3f522.js:48
 msgid "There was a network problem saving the data. Please try again or reload the page"
 msgstr "Er is een netwerkprobleem geconstateerd tijdens het opslaan van de data. Probeer het nog eens of herlaad de pagina"
 
-#: dist/assets/admin-843bfb1e.js:49
+#: dist/assets/admin-f4e3f522.js:49
 msgid "Network error, please try again"
 msgstr "Netwerkprobleem, probeer het nog eens"
 
-#: dist/assets/admin-843bfb1e.js:50
+#: dist/assets/admin-f4e3f522.js:50
 msgid "Validation"
 msgstr "Validatie"
 
-#: dist/assets/admin-843bfb1e.js:51
+#: dist/assets/admin-f4e3f522.js:51
 msgid "There was a problem retrieving the list of players. Please try again"
 msgstr "Er was een probleem met het ophalen van de lijst spelers. Probeer het nog eens of herlaad de pagina"
 
-#: dist/assets/admin-843bfb1e.js:52
+#: dist/assets/admin-f4e3f522.js:52
 msgid "Edit Match Information"
 msgstr "Match Informatie Bewerken"
 
-#: dist/assets/admin-843bfb1e.js:53
+#: dist/assets/admin-f4e3f522.js:53
 msgid "Player 1"
 msgstr "Speler 1"
 
-#: dist/assets/admin-843bfb1e.js:54
+#: dist/assets/admin-f4e3f522.js:54
 msgid "Player 2"
 msgstr "Speler 2"
 
-#: dist/assets/admin-843bfb1e.js:55
+#: dist/assets/admin-f4e3f522.js:55
 msgid "Players"
 msgstr "Spelers"
 
-#: dist/assets/admin-843bfb1e.js:56
+#: dist/assets/admin-f4e3f522.js:56
 msgid "Pick a player"
 msgstr "Kies een speler"
 
-#: dist/assets/admin-843bfb1e.js:57
+#: dist/assets/admin-f4e3f522.js:57
 msgid "Score Player 1"
 msgstr "Score Speler 1"
 
-#: dist/assets/admin-843bfb1e.js:58
+#: dist/assets/admin-f4e3f522.js:58
 msgid "Score Player 2"
 msgstr "Score Speler 2"
 
-#: dist/assets/admin-843bfb1e.js:59
+#: dist/assets/admin-f4e3f522.js:59
 msgid "Score"
 msgstr "Score"
 
-#: dist/assets/admin-843bfb1e.js:60
+#: dist/assets/admin-f4e3f522.js:60
 msgid "Rank"
 msgstr "Rang"
 
-#: dist/assets/admin-843bfb1e.js:61
+#: dist/assets/admin-f4e3f522.js:61
 msgid "Date"
 msgstr "Datum"
 
-#: dist/assets/admin-843bfb1e.js:62
+#: dist/assets/admin-f4e3f522.js:62
 msgid "N.N."
 msgstr "N.N."
 
-#: dist/assets/admin-843bfb1e.js:63
+#: dist/assets/admin-f4e3f522.js:63
 msgid "YYYY-MM-DD HH:mm"
 msgstr "YYYY-MM-DD HH:mm"
 
-#: dist/assets/admin-843bfb1e.js:24
+#: dist/assets/admin-f4e3f522.js:24
 msgid "Sheet"
 msgstr "Werkblad"
 
-#: dist/assets/admin-843bfb1e.js:25
+#: dist/assets/admin-f4e3f522.js:25
 msgid "Select a sheet"
 msgstr "Selecteer een werkblad"

@@ -8,6 +8,7 @@ MINOR="0"
 MICRO="0"
 DOPOT="0"
 DOTEST="0"
+NOUPDATE="0"
 
 while [ $# -gt 0 ]
 do
@@ -38,6 +39,11 @@ do
         RELEASE="0"
     fi
 
+    if [[ "x$arg" = "x-n" ]]
+    then
+        NOUPDATE="1"
+    fi
+
     if [[ "x$arg" = "x-h" ]]
     then
         echo "Deploy to Wordpress script"
@@ -50,6 +56,7 @@ do
         echo "-r           release a major release (tag with major value upgraded)"
         echo "-t           run extended tests"
         echo "-v           release a minor release (tag with minor value upgraded)"
+        echo "-n           do not update the version"
         echo ""
         echo "Add the WPDIR directory location of the destination SVN repository in the"
         echo ".env file next to this script. Set the PROJECT variable to the name of"
@@ -142,23 +149,28 @@ MAJ=`echo $VERSION | sed 's/\([0-9]*\).*/\1/'`
 MIN=`echo $VERSION | sed 's/[0-9]*\.\([0-9]*\).*/\1/'`
 MICR=`echo $VERSION | sed 's/[0-9]*\.[0-9]*\.\([0-9]*\)/\1/'`
 
-if [[ "x1" = "x$MAJOR" ]]
+if [[ "x1" = "x$NOUPDATE" ]]
 then
-    echo "Performing major release"
-    let "MAJ=$MAJ+1"
-    MIN="0"
-    MICR="0"
+    echo "No version update"
 else
-    if [[ "x1" = "x$MINOR" ]]
+    if [[ "x1" = "x$MAJOR" ]]
     then
-        echo "Performing minor release"
-        let "MIN=$MIN+1"
+        echo "Performing major release"
+        let "MAJ=$MAJ+1"
+        MIN="0"
         MICR="0"
     else
-        if [[ "x$RELEASE" = "x1" ]]
+        if [[ "x1" = "x$MINOR" ]]
         then
-            echo "Performing micro release"
-            let "MICR=$MICR+1"
+            echo "Performing minor release"
+            let "MIN=$MIN+1"
+            MICR="0"
+        else
+            if [[ "x$RELEASE" = "x1" ]]
+            then
+                echo "Performing micro release"
+                let "MICR=$MICR+1"
+            fi
         fi
     fi
 fi
@@ -176,6 +188,7 @@ mv tmp.$$ "package.json"
 popd > /dev/null
 
 # perform a production build before we deploy
+rm -rf dist/*
 pushd vue > /dev/null
 npm run build
 STAT=$?
@@ -187,17 +200,33 @@ then
 fi
 
 mkdir -p $WPDIR/trunk
-cp -r -v *.php LICENSE readme.txt controllers lib models vendor dist $WPDIR/trunk
+# clear out the trunk, we're rebuilding it
+echo "clearing out the trunk"
+rm -rf $WPDIR/trunk/*
+echo "copying files"
+cp -r *.php LICENSE readme.txt controllers lib models dist $WPDIR/trunk
+if [[ -d vendor ]]
+then
+    cp -r vendor $WPDIR/trunk
+fi
 
 if [[ -d languages ]]
 then
+    echo "rebuilding language files in root"
+    # recreate the pot file to make sure it refers to the right javascript files
+    $WPCLI i18n make-pot . languages/$PROJECT.pot --exclude="vue" --include="lib,models,controllers,assets,dist,$PROJECT.php"
+    # update the PO files
+    $WPCLI i18n update-po languages/$PROJECT.pot
+
+    echo "copying language files to trunk"
     mkdir -p $WPDIR/trunk/languages
-    cp -v languages/*.po $WPDIR/trunk/languages
+    cp languages/*.po $WPDIR/trunk/languages
 
     # purge the language files and output them small
     # first make-json, so we purge the .po files.
     # then make .mo from the purged .po files
     pushd $WPDIR/trunk > /dev/null
+    echo "creating mo and json language files in trunk"
     rm -f languages/*.mo languages/*.json
     $WPCLI i18n make-json languages
     $WPCLI i18n make-mo languages
@@ -206,17 +235,23 @@ then
 fi
 
 # unset all debug flags
+echo "unsetting debug flags"
 pushd $WPDIR/trunk > /dev/null
 cat $PROJECT.php | sed "s/\(define.*DEBUG.*\).*true/\1false/i" > tmp.php
 mv tmp.php $PROJECT.php
 popd > /dev/null
 
-pushd /tmp > /dev/null
-cp -darpv $WPDIR/trunk /tmp/$PROJECT
+echo "creating plugin zip file"
+mkdir /tmp/dir.$$
+pushd /tmp/dir.$$ > /dev/null
+cp -darp $WPDIR/trunk /tmp/dir.$$/$PROJECT
 zip -r $PROJECT $PROJECT
 # move it one folder up, out of the SVN
 mv $PROJECT.zip $WPDIR/..
-rm -rf /tmp/$PROJECT
 popd > /dev/null
+rm -rf /tmp/dir.$$
 
-mg create tag "${MAJ}.${MIN}.${MICR}" -m "auto tagged commit"
+if [[ "x0" = "x$NOUPDATE" ]]
+then
+    mg create tag "${MAJ}.${MIN}.${MICR}" -m "auto tagged commit"
+fi
