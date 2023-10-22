@@ -2,4 +2,23 @@
     input[type="text"], input[type="text"]:focus {
         border-width: 0px;
     }
+
+    .grid-header {
+        display: flex;
+        flex-direction: column;
+
+        .grid-actions {
+            padding: 10px 0;
+        }
+    }
+
+    .grid {
+        table {
+            tr.isdirty {
+                td {
+                    color: #f33;
+                }
+            }
+        }
+    }
 }

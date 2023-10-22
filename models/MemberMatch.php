@@ -33,10 +33,11 @@ class MemberMatch extends Base
 {
     public $table = "memberdataranking_match";
     public $pk = "id";
-    public $fields = array("id", "entered_at");
+    public $fields = array("id", "matchtype", "entered_at");
 
     public $rules = array(
         "id" => "skip",
+        "matchtype" => "required|min=1",
         "entered_at" => "required|datetime"
     );
 

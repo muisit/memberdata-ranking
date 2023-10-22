@@ -74,9 +74,19 @@ HEREDOC;
 
         // allow a group name as attribute
         $groupname = "all";
+        $rankname = "";
         if (is_array($attributes) && count($attributes)) {
-            $groupname = reset($attributes);
+            foreach ($attributes as $key => $attr)
+            {
+                if (strtolower($key) == 'group') {
+                    $groupname = $attr;
+                }
+                if (strtolower($key) == 'type') {
+                    $rankname = $attr;
+                }
+            }
         }
+
         $data = PlayerList::listPlayers($groupname);
         $tablerows = "";
         $pos = 0;

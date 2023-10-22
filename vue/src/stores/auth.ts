@@ -11,10 +11,12 @@ export const useAuthStore = defineStore('auth', () => {
     const playersList:Ref<Array<Player>> = ref([]);
     const playerById:Ref<PlayerById> = ref({});
     const currentGroup = ref('all');
+    const currentRanking = ref('');
     const configuration:Ref<Configuration> = ref({validgroups:[]});
     const sheets:Ref<Array<Sheet>> = ref([]);
     const attributes:Ref<Array<string>> = ref([]);
     const groupingvalues:Ref<Array<string>> = ref([]);
+    const rankattributes:Ref<Array<string>> = ref([]);
 
     function getConfiguration()
     {
@@ -35,9 +37,13 @@ export const useAuthStore = defineStore('auth', () => {
             attributes.value = data.data.attributes || [];
             groupingvalues.value = data.data.groupingvalues || [];
             sheets.value = data.data.sheets || [];
+            rankattributes.value = data.data.rankAttributes || [];
+            if (!currentRanking.value || currentRanking.value.length == 0) {
+                console.log("setting current ranking to ", rankattributes.value[0]);
+                currentRanking.value = rankattributes.value[0];
+            }
         });
     }
-
 
     function getPlayers()
     {
@@ -45,7 +51,6 @@ export const useAuthStore = defineStore('auth', () => {
             playersList.value = [];
             playerById.value = {};
             if (data.data) {
-                
                 playersList.value = data.data;
                 playerById.value = {};
                 playersList.value.forEach((player) => {
@@ -134,7 +139,8 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     return { 
-        nonce, baseUrl, currentGroup, configuration, attributes, sheets, groupingvalues,
+        nonce, baseUrl, currentGroup, currentRanking, configuration,
+        attributes, sheets, groupingvalues, rankattributes,
         getConfiguration, getBasicSettings,
         getPlayers, updatePlayerInList, sortPlayers, playersList, playerById
     }

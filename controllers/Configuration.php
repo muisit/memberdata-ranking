@@ -56,11 +56,13 @@ class Configuration extends Base
         $attributes = $configuration['configuration'];
         $groupvalues = \apply_filters('memberdata_values', ['sheet' => $sheet, "field" => $field, 'values' => []]);
         $sheets = \apply_filters('memberdata_find_sheets', []);
+        $rankAttributes = $this->findRankAttributes($sheet);
 
         return [
             "groupingvalues" => $groupvalues['values'] ?? [],
             "attributes" => array_column($attributes, 'name'),
             "sheets" => $sheets,
+            "rankAttributes" => $rankAttributes
         ];
     }
 
@@ -103,5 +105,17 @@ class Configuration extends Base
 
         update_option(Display::PACKAGENAME . '_values', json_encode($eloconfig));
         return $this->index();
+    }
+
+    private function findRankAttributes($sheetid)
+    {
+        $retval = [];
+        $attributes = self::getConfig($sheetid);
+        foreach ($attributes as $attribute) {
+            if ($attribute['type'] == 'rank') {
+                $retval[] = $attribute['name'];
+            }
+        }
+        return $retval;
     }
 }

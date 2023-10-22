@@ -110,7 +110,16 @@ import { ElButton, ElInput, ElSelect, ElOption, ElCheckbox } from 'element-plus'
             <ElOption v-for="sht in auth.sheets" :key="sht.id" :label="sht.name" :value="'' + sht.id"/>
           </ElSelect>
         </td>
-        <td>{{ lang.NAME_INFO }}</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td valign="top">{{ lang.RANKS }}</td>
+        <td valign="top">
+          <div v-for="(attr, index) in auth.rankattributes" :key="index">
+            {{ attr }}
+          </div>
+        </td>
+        <td>{{ lang.RANKS_INFO }}</td>
       </tr>
       <tr>
         <td valign="top">{{ lang.NAME }}</td>

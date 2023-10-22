@@ -38,9 +38,11 @@ class Matches extends Base
 
         $offset = intval($data['model']['offset'] ?? 0);
         $pagesize = intval($data['model']['pagesize'] ?? 0);
+        $matchtype = $data['model']['matchtype'] ?? '';
+
         $matchModel = new MatchModel();
-        $count = $matchModel->count();
-        $qb = $matchModel->select()->sorted();
+        $count = $matchModel->select()->where('matchtype', $matchtype)->count();
+        $qb = $matchModel->select()->where('matchtype', $matchtype)->sorted();
         if ($pagesize > 0) {
             $qb->limit($pagesize)->offset($offset);
         }
@@ -71,6 +73,7 @@ class Matches extends Base
         }
         $entered_at = $this->parseDate($modelData['entered_at'] ?? null);
 
+        $matchModel->matchtype = $modelData['matchtype'] ?? '';
         $matchModel->entered_at = $entered_at;
         $result1 = $this->createResult($results[0], $matchModel);
         $result2 = $this->createResult($results[1], $matchModel);
@@ -101,10 +104,8 @@ class Matches extends Base
             $matchIds = array_unique(array_column($matches, 'match_id'));
 
             $matches = $matchModel->select()->where('id', 'in', $matchIds)->sorted()->get();
-            error_log("match order is " . json_encode(array_column($matches, 'id')));
             for ($i = count($matches) - 1; $i >= 0; $i--) {
                 $matchModel = new MatchModel($matches[$i]);
-                error_log("reassessing " . $matchModel->getKey() . '/' . $matchModel->entered_at);
                 \apply_filters(Display::PACKAGENAME . '_assess_match', $matchModel);
             }
         }

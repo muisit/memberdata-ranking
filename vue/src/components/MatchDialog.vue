@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ref, watch } from 'vue';
 import { is_valid } from '@/lib/functions';
 import type { Match, Player } from '@/lib/types';
 import { useAuthStore } from '@/stores/auth';
@@ -30,6 +31,19 @@ function removeMatch()
 function submitForm()
 {
     let retval = true;
+
+    props.matchdata.results[0].player_id = 0;
+    props.matchdata.results[1].player_id = 0;
+    auth.playersList.forEach((player:Player) => {
+        let name = player.name.toLocaleLowerCase();
+        if (player1.value.toLocaleLowerCase() == name) {
+            props.matchdata.results[0].player_id = player.id;
+        }
+        if (player2.value.toLocaleLowerCase() == name) {
+            props.matchdata.results[1].player_id = player.id;
+        }
+    });
+
     if (!is_valid(props.matchdata.results[0].player_id)) {
         alert(lang.MATCH_VALID_PLAYER1);
         retval = false;
@@ -54,6 +68,7 @@ function submitForm()
     if (retval && parseInt('' + props.matchdata.results[1].score) < 0 || isNaN(props.matchdata.results[1].score || 0)) {
         alert(lang.MATCH_VALID_SCORE2);
     }
+    props.matchdata.matchtype = auth.currentRanking;
 
     if (retval) {
         saveMatch(props.matchdata)
@@ -77,12 +92,37 @@ function update(fieldName:string, value: any)
     emits('onUpdate', {field: fieldName, value: value});
 }
 
+const player1 = ref(modelValue('player_1'));
+const player2 = ref(modelValue('player_2'));
+watch(
+    () => props.visible,
+    (nw) => {
+        if (nw) {
+            player1.value = modelValue('player_1');
+            player2.value = modelValue('player_2');
+        }
+    }
+)
+
+interface PlayerById {
+    [key:number]: Player;
+}
+
 function modelValue(field:string)
 {
-    if (field == 'player_1') {
-        return '' + props.matchdata.results[0].player_id;
+    let players = validPlayers();
+    let playerById:PlayerById = {};
+    players.forEach((p:Player) => playerById[p.id] = p);
+
+    let index = 0;
+    if (field == 'player_2') {
+        index = 1;
     }
-    return '' + props.matchdata.results[1].player_id;
+    let pid = props.matchdata.results[index].player_id || 0;
+    if (playerById[pid]) {
+        return playerById[pid].name;
+    }
+    return '';
 }
 
 function validPlayers()
@@ -97,22 +137,45 @@ function validPlayers()
     });
 }
 
-import { ElDialog, ElForm, ElFormItem, ElInput, ElButton, ElSelect, ElOption } from 'element-plus';
+function querySearch (queryString: string, cb: any) {
+    console.log("querysearch for " , queryString);
+    queryString = queryString.toLocaleLowerCase();
+    const results = validPlayers().filter((p:Player) => p.name.toLowerCase().indexOf(queryString) === 0);
+    console.log('results is ', results);
+    cb(results.map((p) => { return {value: p.name, link: p} }));
+}
+
+function handleSelect(player:any, attribute:string)
+{
+    console.log("handleSelect for ", player, attribute);
+    let index = (attribute == 'player_1') ? 0 : 1;
+    props.matchdata.results[index].player_id = player.id;
+}
+
+import { ElDialog, ElForm, ElFormItem, ElInput, ElButton, ElSelect, ElOption, ElAutocomplete } from 'element-plus';
 </script>
 <template>
     <ElDialog :model-value="props.visible" :title="lang.DIALOG_MATCH" :close-on-click-modal="false"  :before-close="(done) => { closeForm(); done(false); }">
       <ElForm>
         <ElFormItem :label="lang.PLAYER1">
-          <ElSelect :model-value="modelValue('player_1')" @update:model-value="(e) => update('player_1', e)">
-            <ElOption value="0" :label="lang.PICKPLAYER"/>
-            <ElOption v-for="player in validPlayers()" :key="player.id" :value="player.id" :label="player.name"/>
-          </ElSelect>
+            <ElAutocomplete
+                v-model="player1"
+                :fetch-suggestions="querySearch"
+                :trigger-on-focus="false"
+                clearable
+                :placeholder="lang.PICKPLAYER"
+                @select="(p) => handleSelect(p, 'player_1')"
+            />
         </ElFormItem>
         <ElFormItem :label="lang.PLAYER2">
-          <ElSelect :model-value="modelValue('player_2')" @update:model-value="(e) => update('player_2', e)">
-            <ElOption value="0" :label="lang.PICKPLAYER"/>
-            <ElOption v-for="player in validPlayers()" :key="player.id" :value="player.id" :label="player.name"/>
-          </ElSelect>
+            <ElAutocomplete
+                v-model="player2"
+                :fetch-suggestions="querySearch"
+                :trigger-on-focus="false"
+                clearable
+                :placeholder="lang.PICKPLAYER"
+                @select="(p) => handleSelect(p, 'player_2')"
+            />
         </ElFormItem>
         <ElFormItem :label="lang.SCORE1">
           <ElInput :model-value="props.matchdata.results[0].score || 0" @update:model-value="(e) => update('score_1', e)"/>

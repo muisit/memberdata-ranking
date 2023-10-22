@@ -51,11 +51,10 @@ class PlayerList
 
         $config = \apply_filters('memberdata_configuration', ['sheet' => $eloconfig->sheet]);
         $attributes = $config['configuration'] ?? [];
-        $attribute = null;
+        $rankAttributes = [];
         foreach ($attributes as $a) {
             if ($a['type'] == 'rank') {
-                $attribute = $a;
-                break;
+                $rankAttributes[] = $a;
             }
         }
 
@@ -63,8 +62,9 @@ class PlayerList
         foreach ($result['list'] as $member) {
             $row = [
                 'id' => $member['id'],
-                'rank' => 1000,
+                'rankings' => []
             ];
+
             if (!empty($namefield) && isset($member[$namefield])) {
                 $row['name'] = $member[$namefield];
             }
@@ -76,17 +76,20 @@ class PlayerList
                 continue;
             }
 
-            if ($attribute != null) {
-                $row['rank'] = intval($member[$attribute['name']] ?? $eloconfig->base_rank);
+            foreach ($rankAttributes as $a) {
+                $rankingValue = intval($member[$a['name']] ?? $eloconfig->base_rank);
+                $row['rankings'][$a['name']] = $rankingValue;
             }
             $data[] = $row;
         }
 
         usort($data, function ($a, $b) {
-            if ($a['rank'] == $b['rank']) {
-                return ($a['name'] ?? $a['id']) <=> ($b['name'] ?? $b['id']);
+            foreach ($rankAttributes as $attr) {
+                if ($a['rankings'][$attr['name']] != $b['rankings'][$attr['name']]) {
+                    return -1 * ($a['rankings'][$attr['name']] <=> $b['rankings'][$attr['name']]);
+                }
             }
-            return -1 * ($a['rank'] <=> $b['rank']);
+            return ($a['name'] ?? $a['id']) <=> ($b['name'] ?? $b['id']);
         });
 
         return $data;

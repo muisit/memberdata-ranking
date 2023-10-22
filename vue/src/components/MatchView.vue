@@ -20,23 +20,37 @@ watch (
             }
             auth.getPlayers()
                 .then(() => {
+                    console.log("currentRanking is", auth.currentRanking);
+                    if (!auth.rankattributes.includes(auth.currentRanking)) {
+                        console.log("setting currentRanking to ", auth.rankattributes);
+                        auth.currentRanking = auth.rankattributes[0];
+                    }
                     updateMatches();
                 });
         }
     },
     { immediate: true}
+);
+watch(
+    () => auth.currentRanking,
+    (nw) => {
+        updateMatches();
+    },
+    { immediate: true }
 )
 
 const matchList:Ref<Array<Match>> = ref([]);
 const matchCount = ref(0);
 function updateMatches()
 {
-    matches().then((data:any) => {
-        if (data.data) {
-            matchList.value = data.data.list || [];
-            matchCount.value = data.data.count;
-        }
-    });
+    if (auth.currentRanking && auth.currentRanking.length && auth.rankattributes.includes(auth.currentRanking)) {
+        matches(auth.currentRanking, 20, 0).then((data:any) => {
+            if (data.data) {
+                matchList.value = data.data.list || [];
+                matchCount.value = data.data.count;
+            }
+        });
+    }
 }
 
 const matchValue:Ref<Match> = ref({id:0, entered_at: '', results: [{id:0, player_id: 0}, {id:0, player_id: 0}]});
@@ -124,32 +138,43 @@ function formatMatchDate(dt:string)
     return dayjs(dt).format(lang.DATEFORMATWITHOUTMINUTES);
 }
 
+function isDirtyMatch(matchData)
+{
+    return matchData.results[0].is_dirty == 'Y' || matchData.results[1].is_dirty == 'Y';
+}
+
 import MatchDialog from './MatchDialog.vue';
 import GroupSelector from './GroupSelector.vue';
-import { ElButton } from 'element-plus';
+import RankingSelector from './RankingSelector.vue';
+import { ElIcon, ElButton } from 'element-plus';
+import { Edit } from '@element-plus/icons-vue';
 </script>
 <template>
     <div>
         <div class="grid-header">
             <GroupSelector />
-            <ElButton @click="reassess" type="primary">{{ lang.REASSESS }}</ElButton>
-            <ElButton @click="addNew" type="primary">{{ lang.ADD }}</ElButton>
+            <RankingSelector />
+            <div class="grid-actions">
+                <ElButton @click="reassess" type="primary">{{ lang.REASSESS }}</ElButton>
+                <ElButton @click="addNew" type="primary">{{ lang.ADD }}</ElButton>
+            </div>
         </div>
         <div class="grid">
             <table>
                 <thead>
                     <tr>
+                        <th></th>
                         <th>{{ lang.PLAYERS }}</th>
                         <th>{{ lang.SCORE }}</th>
                         <th>{{ lang.RANK }}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="matchData in matchList" :key="matchData.id" @dblclick="() => { matchValue = matchData; visibleDialog = true;}">
+                    <tr v-for="matchData in matchList" :key="matchData.id" :class="{isdirty: isDirtyMatch(matchData)}">
+                        <td><ElIcon size='large' @click="() => { matchValue = matchData; visibleDialog = true;}"><Edit/></ElIcon></td>
                         <td>{{ getPlayersFromResults(matchData) }}</td>
                         <td>{{ getScoreFromResults(matchData) }}</td>
                         <td>{{ formatMatchDate(matchData.entered_at) }}</td>
-                        <td>{{ matchData.id }}: {{  matchData.results[0].is_dirty }} / {{  matchData.results[1].is_dirty }}</td>
                     </tr>
                 </tbody>
             </table>

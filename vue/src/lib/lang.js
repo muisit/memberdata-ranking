@@ -2,6 +2,7 @@ const { __ } = window.wp.i18n;
 
 export default {
     ADMIN_PAGE: __('ELO Ranking Manager', 'memberdata-ranking'),
+    SHORTCODE: __('Shortcode', 'memberdata-ranking'),
     TAB_MATCHES: __('Matches', 'memberdata-ranking'),
     TAB_RANKING: __('Ranking', 'memberdata-ranking'),
     TAB_SETTINGS: __('Settings', 'memberdata-ranking'),
@@ -16,6 +17,8 @@ export default {
     CVALUE_INFO: __('The C-value determines the factor with which expectations are compared. Large C values make it more difficult to determine an expected score difference between two fencers (everyone seems to be of more or less the same rank), whereas small C-values exagerate small ranking differences and will cause people to continuously switch after entering match results. The default value is 400.', 'memberdata-ranking'),
     SHEET: __('Sheet', 'memberdata-ranking'),
     SHEETSELECT: __('Select a sheet', 'memberdata-ranking'),
+    RANKS: __('Rankings', 'memberdata-ranking'),
+    RANKS_INFO: __('Available ranking columns', 'memberdata-ranking'),
     NAME: __('Name', 'memberdata-ranking'),
     NAME_INFO: __('Select the attribute to use as name field', 'memberdata-ranking'),
     GROUP: __('Group', 'memberdata-ranking'),
@@ -26,7 +29,10 @@ export default {
     SAVE: __('Save', 'memberdata-ranking'),
     CANCEL: __('Cancel', 'memberdata-ranking'),
     REMOVE: __('Remove', 'memberdata-ranking'),
+    GROUPSELECT: __('Group', 'memberdata-ranking'),
     ALL: __('All', 'memberdata-ranking'),
+    NONE: __('None', 'memberdata-ranking'),
+    RANKINGSELECT: __('Ranking', 'memberdata-ranking'),
     REASSESS: __('Reassess', 'memberdata-ranking'),
     ADD: __('Add', 'memberdata-ranking'),
     MSG_REASSESSED: __("Matches reassessed", 'memberdata-ranking'),

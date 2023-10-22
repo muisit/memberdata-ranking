@@ -26,10 +26,12 @@
 
 namespace MemberDataRanking\Lib;
 
-use MemberDataRanking\Models\MemberMatch;
 use MemberDataRanking\Lib\Services\MatchAssessor;
+use MemberData\Models\Sheet;
 use MemberData\Models\Member;
+use MemberDataRanking\Models\MemberMatch;
 use MemberDataRanking\Models\Result;
+use MemberDataRanking\Controllers\Base;
 
 class Plugin
 {
@@ -42,12 +44,45 @@ class Plugin
         }, 600, 1);
       
         add_filter(Display::PACKAGENAME . '_assess_match', function (MemberMatch $matchModel) {
+            $eloconfig = Base::getRankConfig();
             if (MatchAssessor::assessMatch($matchModel)) {
-                $config = \apply_filters('memberdata_configuration', []);
+                $config = \apply_filters('memberdata_configuration', ['sheet' => $eloconfig->sheet]);
                 self::updateMemberRanking($matchModel->results[0]->getLastResult(), $config);
                 self::updateMemberRanking($matchModel->results[1]->getLastResult(), $config);
             }
         }, 500, 1);
+
+        add_filter('memberdata_save_configuration', function ($configuration) {
+            // if there are 'originalName' entries that differ from the 'name' value and have a rank type,
+            // update the matchtype for that name
+            $matchModel = new MemberMatch();
+            foreach ($configuration as $sheetno => $attributes) {
+                $sheet = new Sheet(substr($sheetno, 6));
+                $sheet->load();
+                if (!$sheet->isNew()) {
+                    foreach ($attributes as $attribute) {
+                        if ($attribute['type'] == 'rank') {
+                            if (isset($attribute['name']) && isset($attribute['originalName']) && $attribute['name'] != $attribute['originalName']) {
+                                $matchModel->query()
+                                    ->set('matchtype', $attribute['name'])
+                                    ->where('matchtype', $attribute['originalName'])
+                                    ->whereExists(function ($qb) use ($sheet) {
+                                        $model = new Result();
+                                        $memberModel = new Member();
+                                        return $qb->select('*')->from($model->table)
+                                            ->innerJoin($memberModel->tableName(), 'm', 'm.id = ' . $model->tableName() . '.player_id')
+                                            ->innerJoin($sheet->tableName(), 's', 's.id = m.sheet_id')
+                                            ->where('s.id', $sheet->getKey());
+                                    })
+                                    ->update();
+                            }
+                        }
+                    }
+                }
+            }
+            return $configuration;
+        }, 500, 1);
+
     }
 
     private static function updateMemberRanking(object $result, array $config)
@@ -55,11 +90,12 @@ class Plugin
         if (!empty($result)) {
             $member = new Member($result->player_id);
             $attributes = [];
-            foreach ($config as $attribute) {
+            foreach ($config['configuration'] as $attribute) {
                 if ($attribute['type'] == 'rank') {
                     $attributes[$attribute['name']] = $result->rank_end;
                 }
             }
+
             apply_filters('memberdata_save_attributes', [
                 'member' => $member,
                 'attributes' => $attributes,

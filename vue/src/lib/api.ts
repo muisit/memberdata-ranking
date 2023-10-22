@@ -142,8 +142,8 @@ export function removePlayer(player:Player): Promise<APIResult> {
     return fetchJson('player/delete', player);
 }
 
-export function matches(): Promise<APIResult> {
-    return fetchJson('match');
+export function matches(matchtype: string, pagesize:number, offset:number): Promise<APIResult> {
+    return fetchJson('match', {matchtype: matchtype, pagesize: pagesize, offset: offset});
 }
 
 export function saveMatch(match:Match): Promise<APIResult> {

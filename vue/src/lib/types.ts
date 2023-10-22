@@ -1,9 +1,13 @@
+export interface Rankings {
+    [key:string]: number;
+}
+
 export interface Player {
     id: number;
     name: string;
     groupname?: string;
     status?: string;
-    rank: number;
+    rankings: Rankings;
 }
 
 export interface PlayerById {
@@ -58,6 +62,7 @@ export interface Result {
 
 export interface Match {
     id: number;
+    matchtype: string;
     entered_at: string;
     results: Array<Result>;
 }
