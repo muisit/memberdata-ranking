@@ -43,10 +43,18 @@ class Base extends BaseController
                 's_value' => 16,
                 'namefield' => '',
                 'groupingfield' => 'none',
-                'sheet' => 0
+                'sheet' => 0,
+                'token' => uniqid()
             ];
             add_option(Display::PACKAGENAME . '_values', json_encode($eloconfig));
         }
         return $eloconfig;
+    }
+
+    protected function tokenOrAuthenticate($token)
+    {
+        $this->checkNonce();
+        $config = self::getRankConfig();
+        return $token == $config->token || $this->authenticate();
     }
 }

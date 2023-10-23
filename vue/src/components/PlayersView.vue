@@ -54,8 +54,10 @@ import RankingSelector from './RankingSelector.vue';
             <RankingSelector />
         </div>
         <div class="grid">
-            {{ lang.SHORTCODE }}:<br/>
-            [memberdata-ranking-list group='{{  auth.currentGroup }}' type='{{ auth.currentRanking}}']<br/>
+            <span v-if="!auth.isfrontend">
+                {{ lang.SHORTCODE }}:<br/>
+                [memberdata-ranking-list group='{{  auth.currentGroup }}' type='{{ auth.currentRanking}}']<br/>
+            </span>
             <table>
                 <thead>
                     <tr>

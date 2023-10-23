@@ -1,6 +1,10 @@
-#memberdata_ranking-admin {
+#memberdata_ranking-frontend {
     input[type="text"], input[type="text"]:focus {
         border-width: 0px;
+    }
+
+    .el-button {
+        background-image: none;
     }
 
     .grid-header {
@@ -13,6 +17,10 @@
 
         .grid-actions {
             padding: 10px 0;
+
+            button {
+                float: right;
+            }
         }
     }
 
@@ -23,6 +31,13 @@
                     color: #f33;
                 }
             }
+        }
+    }
+
+    .el-dialog {
+        footer {
+            float: none;
+            width: auto;
         }
     }
 }

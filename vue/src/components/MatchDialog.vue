@@ -31,47 +31,48 @@ function removeMatch()
 function submitForm()
 {
     let retval = true;
+    let matchdata = Object.assign({}, props.matchdata);
 
-    props.matchdata.results[0].player_id = 0;
-    props.matchdata.results[1].player_id = 0;
+    matchdata.results[0].player_id = 0;
+    matchdata.results[1].player_id = 0;
     auth.playersList.forEach((player:Player) => {
         let name = player.name.toLocaleLowerCase();
         if (player1.value.toLocaleLowerCase() == name) {
-            props.matchdata.results[0].player_id = player.id;
+            matchdata.results[0].player_id = player.id;
         }
         if (player2.value.toLocaleLowerCase() == name) {
-            props.matchdata.results[1].player_id = player.id;
+            matchdata.results[1].player_id = player.id;
         }
     });
 
-    if (!is_valid(props.matchdata.results[0].player_id)) {
+    if (!is_valid(matchdata.results[0].player_id)) {
         alert(lang.MATCH_VALID_PLAYER1);
         retval = false;
     }
-    if (!is_valid(props.matchdata.results[1].player_id)) {
+    if (!is_valid(matchdata.results[1].player_id)) {
         alert(lang.MATCH_VALID_PLAYER2);
         retval = false;
     }
-    if (retval && props.matchdata.results[0].player_id == props.matchdata.results[1].player_id) {
+    if (retval && matchdata.results[0].player_id == matchdata.results[1].player_id) {
         alert(lang.MATCH_NO_DOUBLE_PLAYER);
         retval = false;
     }
-    var dt = dayjs(props.matchdata.entered_at);
+    var dt = dayjs(matchdata.entered_at);
     if (!dt.isValid()) {
         alert(lang.MATCH_VALID_DATE);
         retval = false;
     }
 
-    if (retval && parseInt('' + props.matchdata.results[0].score) < 0 || isNaN(props.matchdata.results[0].score || 0)) {
+    if (retval && parseInt('' + matchdata.results[0].score) < 0 || isNaN(matchdata.results[0].score || 0)) {
         alert(lang.MATCH_VALID_SCORE1);
     }
-    if (retval && parseInt('' + props.matchdata.results[1].score) < 0 || isNaN(props.matchdata.results[1].score || 0)) {
+    if (retval && parseInt('' + matchdata.results[1].score) < 0 || isNaN(matchdata.results[1].score || 0)) {
         alert(lang.MATCH_VALID_SCORE2);
     }
-    props.matchdata.matchtype = auth.currentRanking;
+    matchdata.matchtype = auth.currentRanking;
 
     if (retval) {
-        saveMatch(props.matchdata)
+        saveMatch(matchdata, auth.token)
             .then((data:any) => {
                 if (data && data.success) {
                     emits('onSave');
@@ -138,21 +139,28 @@ function validPlayers()
 }
 
 function querySearch (queryString: string, cb: any) {
-    console.log("querysearch for " , queryString);
     queryString = queryString.toLocaleLowerCase();
     const results = validPlayers().filter((p:Player) => p.name.toLowerCase().indexOf(queryString) === 0);
-    console.log('results is ', results);
     cb(results.map((p) => { return {value: p.name, link: p} }));
 }
 
-function handleSelect(player:any, attribute:string)
+function onBlurSelect(attribute:string)
 {
-    console.log("handleSelect for ", player, attribute);
-    let index = (attribute == 'player_1') ? 0 : 1;
-    props.matchdata.results[index].player_id = player.id;
+    let val = attribute == 'player_1' ? player1.value : player2.value;
+    let results = validPlayers().filter((p:Player) => p.name.toLowerCase() == val);
+    if (results.length) {
+        if (attribute == 'player_1') {
+            update('player_1', results[0].id);
+            player1.value = results[0].name;
+        }
+        else {
+            update('player_2', results[0].id);
+            player2.value = results[0].name;
+        }
+    }
 }
 
-import { ElDialog, ElForm, ElFormItem, ElInput, ElButton, ElSelect, ElOption, ElAutocomplete } from 'element-plus';
+import { ElDialog, ElForm, ElFormItem, ElInput, ElButton, ElAutocomplete } from 'element-plus';
 </script>
 <template>
     <ElDialog :model-value="props.visible" :title="lang.DIALOG_MATCH" :close-on-click-modal="false"  :before-close="(done) => { closeForm(); done(false); }">
@@ -162,9 +170,11 @@ import { ElDialog, ElForm, ElFormItem, ElInput, ElButton, ElSelect, ElOption, El
                 v-model="player1"
                 :fetch-suggestions="querySearch"
                 :trigger-on-focus="false"
+                :debounce="0"
                 clearable
                 :placeholder="lang.PICKPLAYER"
-                @select="(p) => handleSelect(p, 'player_1')"
+                @select="(p) => update('player_1', p.id)"
+                @blur="() => onBlurSelect('player_1')"
             />
         </ElFormItem>
         <ElFormItem :label="lang.PLAYER2">
@@ -172,9 +182,11 @@ import { ElDialog, ElForm, ElFormItem, ElInput, ElButton, ElSelect, ElOption, El
                 v-model="player2"
                 :fetch-suggestions="querySearch"
                 :trigger-on-focus="false"
+                :debounce="0"
                 clearable
                 :placeholder="lang.PICKPLAYER"
-                @select="(p) => handleSelect(p, 'player_2')"
+                @select="(p) => update('player_1', p.id)"
+                @blur="() => onBlurSelect('player_2')"
             />
         </ElFormItem>
         <ElFormItem :label="lang.SCORE1">
@@ -195,4 +207,4 @@ import { ElDialog, ElForm, ElFormItem, ElInput, ElButton, ElSelect, ElOption, El
         </span>
       </template>
     </ElDialog>
-</template>@/lib/lang.js
+</template>

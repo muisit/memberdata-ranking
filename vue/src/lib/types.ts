@@ -30,6 +30,7 @@ export interface Configuration {
     c_value?: string;
     k_value?: string;
     l_value?: string;
+    token ?:string;
     namefield?: string;
     groupingfield?: string|null;
     validgroups: Array<string>;

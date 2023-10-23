@@ -83,7 +83,7 @@ class PlayerList
             $data[] = $row;
         }
 
-        usort($data, function ($a, $b) {
+        usort($data, function ($a, $b) use ($rankAttributes) {
             foreach ($rankAttributes as $attr) {
                 if ($a['rankings'][$attr['name']] != $b['rankings'][$attr['name']]) {
                     return -1 * ($a['rankings'][$attr['name']] <=> $b['rankings'][$attr['name']]);

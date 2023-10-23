@@ -32,7 +32,6 @@ class Player extends Base
 {
     public function index($data)
     {
-        $this->authenticate();
         $data = PlayerList::listPlayers();
         return $data;
     }

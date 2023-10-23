@@ -47,8 +47,8 @@ class Plugin
             $eloconfig = Base::getRankConfig();
             if (MatchAssessor::assessMatch($matchModel)) {
                 $config = \apply_filters('memberdata_configuration', ['sheet' => $eloconfig->sheet]);
-                self::updateMemberRanking($matchModel->results[0]->getLastResult(), $config);
-                self::updateMemberRanking($matchModel->results[1]->getLastResult(), $config);
+                self::updateMemberRanking($matchModel->results[0]->getLastResult($matchModel->matchtype), $config, $matchModel->matchtype);
+                self::updateMemberRanking($matchModel->results[1]->getLastResult($matchModel->matchtype), $config, $matchModel->matchtype);
             }
         }, 500, 1);
 
@@ -82,16 +82,15 @@ class Plugin
             }
             return $configuration;
         }, 500, 1);
-
     }
 
-    private static function updateMemberRanking(object $result, array $config)
+    private static function updateMemberRanking(object $result, array $config, string $type)
     {
         if (!empty($result)) {
             $member = new Member($result->player_id);
             $attributes = [];
             foreach ($config['configuration'] as $attribute) {
-                if ($attribute['type'] == 'rank') {
+                if ($attribute['type'] == 'rank' && $attribute['name'] == $type) {
                     $attributes[$attribute['name']] = $result->rank_end;
                 }
             }

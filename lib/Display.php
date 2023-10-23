@@ -34,6 +34,7 @@ class Display
 {
     public const PACKAGENAME = MEMBERDATARANKING_PACKAGENAME;
     private const ADMINSCRIPT = 'src/admin.ts';
+    private const FESCRIPT = 'src/frontend.ts';
 
     public static function adminPage()
     {
@@ -51,17 +52,34 @@ class Display
 HEREDOC;
     }
 
-    public static function addFrontEnd()
+    public static function addFrontEnd($attributes)
     {
+        $groupname = "all";
+        $rankname = "";
+        if (is_array($attributes) && count($attributes)) {
+            foreach ($attributes as $key => $attr) {
+                if (strtolower($key) == 'group') {
+                    $groupname = $attr;
+                }
+                if (strtolower($key) == 'type') {
+                    $rankname = $attr;
+                }
+            }
+        }
+
+        ManifestService::enqueueAssets(self::FESCRIPT, self::PACKAGENAME, __DIR__ . '/../dist', 'memberdata-ranking');
         $nonce = wp_create_nonce(Base::createNonceText());
         $data = [
             "nonce" => $nonce,
             "url" => admin_url('admin-ajax.php?action=' . self::PACKAGENAME),
+            "group" => $groupname,
+            "ranking" => $rankname,
+            "token" => $_GET['token'] ?? ''
         ];
         $obj = json_encode($data);
-        $id = self::PACKAGENAME . '-fe';
+        $id = self::PACKAGENAME . '-frontend';
         $dataName = 'data-' . self::PACKAGENAME;
-        echo <<<HEREDOC
+        return <<<HEREDOC
         <div id="$id" $dataName='$obj'></div>
 HEREDOC;
     }
@@ -76,8 +94,7 @@ HEREDOC;
         $groupname = "all";
         $rankname = "";
         if (is_array($attributes) && count($attributes)) {
-            foreach ($attributes as $key => $attr)
-            {
+            foreach ($attributes as $key => $attr) {
                 if (strtolower($key) == 'group') {
                     $groupname = $attr;
                 }
@@ -95,7 +112,15 @@ HEREDOC;
         foreach ($data as $row) {
             $name = $row['name'] ?? 'N.N.';
             $group = $groupname == 'all' ? ($row['groupname'] ?? null) : null;
-            $rank = $row['rank'];
+            if (!isset($row['rankings']) || (!empty($rankname) && !isset($row['rankings'][$rankname]))) {
+                $rank = 1000;
+            }
+            else if (empty($rankname)) {
+                $rank = max($row['rankings']);
+            }
+            else {
+                $rank = $row['rankings'][$rankname] || 1000;
+            }
 
             $realpos += 1;
             if ($lastrank < 0 || $lastrank != $rank) {
@@ -129,7 +154,7 @@ HEREDOC;
         load_plugin_textdomain('memberdata-ranking', false, basename(dirname(__DIR__)) . '/languages');
         add_action('admin_menu', fn() => self::adminMenu());
         add_shortcode('memberdata-ranking-list', fn($a) => self::addRankingListOutput($a));
-        add_shortcode('memberdata-ranking', fn() => self::addFrontEnd());
+        add_shortcode('memberdata-ranking', fn($a) => self::addFrontEnd($a));
     }
 
     private static function adminMenu()

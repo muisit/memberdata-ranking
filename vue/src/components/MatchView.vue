@@ -20,9 +20,7 @@ watch (
             }
             auth.getPlayers()
                 .then(() => {
-                    console.log("currentRanking is", auth.currentRanking);
                     if (!auth.rankattributes.includes(auth.currentRanking)) {
-                        console.log("setting currentRanking to ", auth.rankattributes);
                         auth.currentRanking = auth.rankattributes[0];
                     }
                     updateMatches();
@@ -33,7 +31,7 @@ watch (
 );
 watch(
     () => auth.currentRanking,
-    (nw) => {
+    () => {
         updateMatches();
     },
     { immediate: true }
@@ -44,7 +42,7 @@ const matchCount = ref(0);
 function updateMatches()
 {
     if (auth.currentRanking && auth.currentRanking.length && auth.rankattributes.includes(auth.currentRanking)) {
-        matches(auth.currentRanking, 20, 0).then((data:any) => {
+        matches(auth.currentRanking, auth.isfrontend ? 10 : 20, 0).then((data:any) => {
             if (data.data) {
                 matchList.value = data.data.list || [];
                 matchCount.value = data.data.count;
@@ -53,7 +51,7 @@ function updateMatches()
     }
 }
 
-const matchValue:Ref<Match> = ref({id:0, entered_at: '', results: [{id:0, player_id: 0}, {id:0, player_id: 0}]});
+const matchValue:Ref<Match> = ref({id:0, entered_at: '', results: [{id:0, player_id: 0}, {id:0, player_id: 0}], matchtype: ''});
 const visibleDialog:Ref<boolean> = ref(false);
 
 function onClose()
@@ -91,7 +89,7 @@ function onUpdate(fieldDef:FieldDefinition)
 
 function addNew()
 {
-    matchValue.value = {id: 0, entered_at:'', results:[{id:0, player_id: 0}, {id:0, player_id: 0}]};
+    matchValue.value = {id: 0, entered_at:dayjs().format(lang.DATEFORMATWITHOUTMINUTES), results:[{id:0, player_id: 0}, {id:0, player_id: 0}], matchtype: auth.currentRanking};
     visibleDialog.value = true;
 }
 
@@ -138,7 +136,7 @@ function formatMatchDate(dt:string)
     return dayjs(dt).format(lang.DATEFORMATWITHOUTMINUTES);
 }
 
-function isDirtyMatch(matchData)
+function isDirtyMatch(matchData:Match)
 {
     return matchData.results[0].is_dirty == 'Y' || matchData.results[1].is_dirty == 'Y';
 }
@@ -147,7 +145,7 @@ import MatchDialog from './MatchDialog.vue';
 import GroupSelector from './GroupSelector.vue';
 import RankingSelector from './RankingSelector.vue';
 import { ElIcon, ElButton } from 'element-plus';
-import { Edit } from '@element-plus/icons-vue';
+import { Edit, Plus } from '@element-plus/icons-vue';
 </script>
 <template>
     <div>
@@ -155,15 +153,18 @@ import { Edit } from '@element-plus/icons-vue';
             <GroupSelector />
             <RankingSelector />
             <div class="grid-actions">
-                <ElButton @click="reassess" type="primary">{{ lang.REASSESS }}</ElButton>
-                <ElButton @click="addNew" type="primary">{{ lang.ADD }}</ElButton>
+                <ElButton @click="reassess" type="primary" v-if="!auth.isfrontend">{{ lang.REASSESS }}</ElButton>
+                <ElButton @click="addNew" type="primary" v-if="auth.token.length">
+                    <ElIcon size="large"><Plus/></ElIcon>
+                    &nbsp;{{ lang.ADD }}
+                </ElButton>
             </div>
         </div>
         <div class="grid">
             <table>
                 <thead>
                     <tr>
-                        <th></th>
+                        <th v-if="!auth.isfrontend"></th>
                         <th>{{ lang.PLAYERS }}</th>
                         <th>{{ lang.SCORE }}</th>
                         <th>{{ lang.RANK }}</th>
@@ -171,7 +172,7 @@ import { Edit } from '@element-plus/icons-vue';
                 </thead>
                 <tbody>
                     <tr v-for="matchData in matchList" :key="matchData.id" :class="{isdirty: isDirtyMatch(matchData)}">
-                        <td><ElIcon size='large' @click="() => { matchValue = matchData; visibleDialog = true;}"><Edit/></ElIcon></td>
+                        <td v-if="!auth.isfrontend"><ElIcon size='large' @click="() => { matchValue = matchData; visibleDialog = true;}"><Edit/></ElIcon></td>
                         <td>{{ getPlayersFromResults(matchData) }}</td>
                         <td>{{ getScoreFromResults(matchData) }}</td>
                         <td>{{ formatMatchDate(matchData.entered_at) }}</td>
@@ -181,4 +182,4 @@ import { Edit } from '@element-plus/icons-vue';
         </div>
         <MatchDialog :matchdata="matchValue" :visible="visibleDialog" @on-close="onClose" @on-save="onSave" @on-update="onUpdate"/>
     </div>
-</template>@/lib/lang
+</template>

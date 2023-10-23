@@ -74,11 +74,12 @@ class Result extends Base
         return $builder->leftJoin($mm->tableName(), 'mm', 'mm.id = ' . $this->tableName() . '.match_id');
     }
 
-    public function getLastResult()
+    public function getLastResult(string $type)
     {
         return $this->select()
             ->withMatch()
             ->where('player_id', $this->player_id)
+            ->where('mm.matchtype', $type)
             ->orderBy('mm.entered_at', 'desc')
             ->orderBy('mm.id', 'desc')
             ->first();
@@ -92,6 +93,7 @@ class Result extends Base
         }
         $this->query()->set('is_dirty', 'Y')
             ->withMatch()
+            ->where('mm.matchtype', $matchModel->matchtype)
             ->andSub()
                 ->andSub()->where('mm.entered_at', '>', $matchModel->entered_at)->get()
                 ->orSub()->where('mm.entered_at', $matchModel->entered_at)->where($this->tableName() . '.id', '>', $this->getKey())->get()

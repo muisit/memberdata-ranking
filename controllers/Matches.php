@@ -34,8 +34,6 @@ class Matches extends Base
 {
     public function index($data)
     {
-        $this->authenticate();
-
         $offset = intval($data['model']['offset'] ?? 0);
         $pagesize = intval($data['model']['pagesize'] ?? 0);
         $matchtype = $data['model']['matchtype'] ?? '';
@@ -57,9 +55,9 @@ class Matches extends Base
 
     public function save($data)
     {
-        $this->authenticate();
+        $this->tokenOrAuthenticate($data['model']['token'] ?? '');
         $matchModel = new MatchModel();
-        $modelData = $data['model'] ?? [];
+        $modelData = $data['model']['match'] ?? [];
         $results = $modelData['results'] ?? [];
 
         if (count($results) != 2) {
@@ -88,10 +86,6 @@ class Matches extends Base
             \apply_filters(Display::PACKAGENAME . '_assess_match', $matchModel);
             return true;
         }
-        else {
-            error_log(json_encode([$matchModel->errors, $result1?->errors ?? [], $result2?->errors ?? []]));
-            return false;
-        }
     }
 
     public function reassess()
@@ -116,7 +110,7 @@ class Matches extends Base
     {
         $this->authenticate();
         $matchModel = new MatchModel();
-        $modelData = $data['model'] ?? [];
+        $modelData = $data['model']['match'] ?? [];
         if (isset($modelData['id'])) {
             $matchModel = new MatchModel($modelData['id']);
             $matchModel->load();
@@ -143,7 +137,6 @@ class Matches extends Base
         $resultModel->load();
 
         if (!$resultModel->isNew() && $resultModel->match_id != $matchModel->getKey()) {
-            error_log("resultmodel is not new and match id does not match");
             return null;
         }
 

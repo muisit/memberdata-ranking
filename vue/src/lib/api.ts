@@ -130,8 +130,8 @@ export function saveconfiguration(data:any): Promise<APIResult> {
     return fetchJson('configuration/save', data);
 }
 
-export function players(): Promise<APIResult> {
-    return fetchJson('player');
+export function players(token?:string): Promise<APIResult> {
+    return fetchJson('player', {token: token || ''});
 }
 
 export function savePlayer(player:Player): Promise<APIResult> {
@@ -146,12 +146,12 @@ export function matches(matchtype: string, pagesize:number, offset:number): Prom
     return fetchJson('match', {matchtype: matchtype, pagesize: pagesize, offset: offset});
 }
 
-export function saveMatch(match:Match): Promise<APIResult> {
-    return fetchJson('match/save', match);
+export function saveMatch(match:Match, token ?:string): Promise<APIResult> {
+    return fetchJson('match/save', { match: match, token: token || ''});
 }
 
 export function removeMatch(match:Match): Promise<APIResult> {
-    return fetchJson('match/delete', match);
+    return fetchJson('match/delete', {match: match});
 }
 
 export function reassessMatches(): Promise<APIResult> {

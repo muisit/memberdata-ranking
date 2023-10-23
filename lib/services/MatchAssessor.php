@@ -76,8 +76,8 @@ class MatchAssessor
         $totalScore = $result1->score + $result2->score;
         $maxScore = 2 * max($result1->score, $result2->score);
 
-        $previousResult1 = self::findPreviousEntry($result1->player_id, $matchModel->entered_at, $result1->getKey());
-        $previousResult2 = self::findPreviousEntry($result2->player_id, $matchModel->entered_at, $result2->getKey());
+        $previousResult1 = self::findPreviousEntry($result1->player_id, $matchModel->entered_at, $result1->getKey(), $matchModel->matchtype);
+        $previousResult2 = self::findPreviousEntry($result2->player_id, $matchModel->entered_at, $result2->getKey(), $matchModel->matchtype);
 
         self::assessSingleResult($matchModel, $result1, $result2, $previousResult1, $previousResult2, $totalScore, $maxScore, $config);
         self::assessSingleResult($matchModel, $result2, $result1, $previousResult2, $previousResult1, $totalScore, $maxScore, $config);
@@ -130,7 +130,7 @@ class MatchAssessor
         }
     }
 
-    private static function findPreviousEntry(int $memberId, string $entered_at, int $resultId): Result
+    private static function findPreviousEntry(int $memberId, string $entered_at, int $resultId, string $type): Result
     {
         // find the entry before this entry, based on entered_at and result id
         // entered_at is probably unique enough
@@ -139,6 +139,7 @@ class MatchAssessor
         $value = $resultModel->select('*')
             ->leftJoin($matchModel->tableName(), 'mm', $resultModel->tableName() . '.match_id=mm.id')
             ->where('player_id', $memberId)
+            ->where('mm.matchtype', $type)
             ->andSub()->where('mm.entered_at', '<', $entered_at)
                 ->orSub()->where('entered_at', $entered_at)->where($resultModel->tableName() . '.id', '<', $resultId)->get()
             ->get()

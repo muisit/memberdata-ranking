@@ -103,6 +103,14 @@ import { ElButton, ElInput, ElSelect, ElOption, ElCheckbox } from 'element-plus'
       </tr>
       <tr><td colspan="2"><hr></td></tr>
       <tr>
+        <td valign="top">{{ lang.AUTHTOKEN }}</td>
+        <td valign="top">
+          <ElInput :model-value="auth.configuration.token" @update:model-value="(e) => auth.configuration.token = e"/>
+        </td>
+        <td>{{ lang.AUTHTOKEN_INFO }}
+        </td>
+      </tr>
+      <tr>
         <td valign="top">{{ lang.SHEET }}</td>
         <td valign="top">
           <ElSelect :model-value="'' + auth.configuration.sheet" @update:model-value="(e) => auth.configuration.sheet = parseInt(e)">

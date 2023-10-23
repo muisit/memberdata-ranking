@@ -8,6 +8,8 @@ import type {Configuration, Player, PlayerById, Sheet } from '@/lib/types';
 export const useAuthStore = defineStore('auth', () => {
     const nonce = ref('');
     const baseUrl = ref('');
+    const token = ref('');
+    const isfrontend = ref(false);
     const playersList:Ref<Array<Player>> = ref([]);
     const playerById:Ref<PlayerById> = ref({});
     const currentGroup = ref('all');
@@ -28,6 +30,7 @@ export const useAuthStore = defineStore('auth', () => {
             configuration.value.groupingfield = data.data.groupingfield || 'none';
             configuration.value.validgroups = data.data.validgroups || [];
             configuration.value.sheet = data.data.sheet || 0;
+            configuration.value.token = data.data.token || '';
         });
     }
 
@@ -39,7 +42,6 @@ export const useAuthStore = defineStore('auth', () => {
             sheets.value = data.data.sheets || [];
             rankattributes.value = data.data.rankAttributes || [];
             if (!currentRanking.value || currentRanking.value.length == 0) {
-                console.log("setting current ranking to ", rankattributes.value[0]);
                 currentRanking.value = rankattributes.value[0];
             }
         });
@@ -47,7 +49,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     function getPlayers()
     {
-        return players().then((data:any) => {
+        return players(token.value).then((data:any) => {
             playersList.value = [];
             playerById.value = {};
             if (data.data) {
@@ -86,62 +88,10 @@ export const useAuthStore = defineStore('auth', () => {
         });
     }
 
-    function sortPlayers(sortingvalue:string)
-    {
-        playersList.value.sort((pa, pb) => {
-            for (let i = 0; i< sortingvalue.length; i++) {
-                const c = sortingvalue[i];
-                let v1 = null;
-                let v2 = null;
-                let comp = -1;
-                switch (c) {
-                    case 'n':
-                        comp = 1;
-                        // falls through
-                    case 'N':
-                        v1 = pa.name;
-                        v2 = pb.name;
-                        break;
-                    case 'i':
-                        comp = 1;
-                        // falls through
-                    case 'I':
-                        v1 = pa.id;
-                        v2 = pb.id;
-                        break;
-                    case 'g':
-                        comp = 1;
-                        // falls through
-                    case 'G':
-                        v1 = pa.groupname;
-                        v2 = pb.groupname;
-                        break;
-                    case 'r':
-                        comp = 1;
-                        // falls through
-                    case 'R':
-                        v1 = pa.rank;
-                        v2 = pb.rank;
-                        break;
-                    default:
-                        break;
-                }
-
-                if (!v1 && v2) return -1*comp;
-                else if(v1 && !v2) return comp;
-                else if (v1 && v2 && v1 != v2) {
-                    if (v1 > v2) return comp;
-                    return -1 * comp;
-                }
-            }
-            return 0;
-        });
-    }
-
     return { 
-        nonce, baseUrl, currentGroup, currentRanking, configuration,
+        nonce, baseUrl, token, isfrontend, currentGroup, currentRanking, configuration,
         attributes, sheets, groupingvalues, rankattributes,
         getConfiguration, getBasicSettings,
-        getPlayers, updatePlayerInList, sortPlayers, playersList, playerById
+        getPlayers, updatePlayerInList, playersList, playerById
     }
 })

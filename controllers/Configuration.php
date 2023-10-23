@@ -30,21 +30,25 @@ use MemberDataRanking\Lib\Display;
 
 class Configuration extends Base
 {
-    public function index()
+    public function index($data)
     {
-        $this->authenticate();
         $eloconfig = self::getRankConfig();
         $data = [
             "base_rank" => $eloconfig->base_rank ?? 1000,
-            "k_value" => $eloconfig->k_value ?? 32,
-            "c_value" => $eloconfig->c_value ?? 400,
-            "l_value" => $eloconfig->l_value ?? 32,
-            "s_value" => $eloconfig->s_value ?? 16,
-            "namefield" => $eloconfig->namefield ?? '',
-            "groupingfield" => $eloconfig->groupingfield ?? '',
             "validgroups" => $eloconfig->validgroups ?? [],
-            "sheet" => $eloconfig->sheet ?? 0
+            "sheet" => $eloconfig->sheet ?? 0,
         ];
+
+        if ($this->canAuthenticate()) {
+            $data["k_value"] = $eloconfig->k_value ?? 32;
+            $data["c_value"] = $eloconfig->c_value ?? 400;
+            $data["l_value"] = $eloconfig->l_value ?? 32;
+            $data["s_value"] = $eloconfig->s_value ?? 16;
+            $data["namefield"] = $eloconfig->namefield ?? '';
+            $data["groupingfield"] = $eloconfig->groupingfield ?? '';
+            $data['token'] = $eloconfig->token ?? '';
+        }
+
         return $data;
     }
 
@@ -58,12 +62,17 @@ class Configuration extends Base
         $sheets = \apply_filters('memberdata_find_sheets', []);
         $rankAttributes = $this->findRankAttributes($sheet);
 
-        return [
+        $data = [
             "groupingvalues" => $groupvalues['values'] ?? [],
-            "attributes" => array_column($attributes, 'name'),
-            "sheets" => $sheets,
             "rankAttributes" => $rankAttributes
         ];
+
+        if ($this->canAuthenticate()) {
+            $data["attributes"] = array_column($attributes, 'name');
+            $data["sheets"] = $sheets;
+        }
+
+        return $data;
     }
 
     public function save($data)
@@ -76,6 +85,7 @@ class Configuration extends Base
         $eloconfig->k_value = intval($data["model"]["k_value"] ?? 32);
         $eloconfig->c_value  = intval($data["model"]["c_value"] ?? 400);
         $eloconfig->sheet = intval($data['model']['sheet'] ?? 0);
+        $eloconfig->token = $data['model']['token'] ?? '';
 
         $configuration = \apply_filters('memberdata_configuration', ['sheet' => $sheet, 'configuration' => []]);
         $attributes = $configuration['configuration'];
