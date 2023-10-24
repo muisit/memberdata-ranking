@@ -119,28 +119,30 @@ HEREDOC;
                 $rank = max($row['rankings']);
             }
             else {
-                $rank = $row['rankings'][$rankname] || 1000;
+                $rank = $row['rankings'][$rankname] ?? 1000;
             }
 
             $realpos += 1;
             if ($lastrank < 0 || $lastrank != $rank) {
                 $pos = $realpos;
             }
+           
+            $tablerows .= "\r\n<tr><td class='pos'>$pos</td><td class='player-name'>$name</td>";
+            if ($groupname == "all") {
+                $tablerows .= "<td class='group-name'>$group</td>";
+            }
+            $tablerows .= "<td class='rank'>$rank</td></tr>";
+        }
 
-            $tablerows .= <<<HEREDOC
-              <tr><td class='pos'>$pos</td><td class='player-name'>$name</td><td class='group-name'>$group</td><td class='rank'>$rank</td></tr>
-            HEREDOC;
+        $headers = "<th>#</th>\r\n<th>$labelName</th>\r\n<th>$labelPoints</th>\r\n";
+        if ($groupname == "all") {
+            $headers = "<th>#</th>\r\n<th>$labelName</th>\r\n<th>$labelGroup</th>\r\n<th>$labelPoints</th>\r\n";
         }
 
         return <<<HEREDOC
         <table class='memberdata-ranking-list'>
             <thead>
-                <tr>
-                    <th>#</th>
-                    <th>$labelName</th>
-                    <th>$labelGroup</th>
-                    <th>$labelPoints</th>
-                </tr>
+                <tr>$headers</tr>
             </thead>
             <tbody>
               $tablerows
