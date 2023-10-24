@@ -76,11 +76,18 @@ class PlayerList
                 continue;
             }
 
+            $hasAnyRanking = false;
             foreach ($rankAttributes as $a) {
-                $rankingValue = intval($member[$a['name']] ?? $eloconfig->base_rank);
+                $rankingValue = intval($member[$a['name']] ?? 0);
+                if ($rankingValue > 0) {
+                    $hasAnyRanking = true;
+                }
                 $row['rankings'][$a['name']] = $rankingValue;
             }
-            $data[] = $row;
+            // skip people without any matches on any ranking
+            if ($hasAnyRanking) {
+                $data[] = $row;
+            }
         }
 
         usort($data, function ($a, $b) use ($rankAttributes) {

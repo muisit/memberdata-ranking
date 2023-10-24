@@ -28,6 +28,9 @@ watch(
 function filterPlayers()
 {
     return auth.playersList.filter((player:Player) => {
+        var ranking = player.rankings[auth.currentRanking] || 0;
+        // skip players without any ranking points yet
+        if (ranking == 0) return false;
         if (auth.currentGroup == 'all' && player.groupname) return true;
         if (player.groupname == auth.currentGroup) return true;
         return false;
@@ -38,8 +41,8 @@ function filterPlayers()
         if (rank1 > rank2) return -1;
         if (rank1 < rank2) return 1;
 
-        if (p1.name > p2.name) return -1;
-        if (p1.name < p2.name) return 1;
+        if (p1.name > p2.name) return 1;
+        if (p1.name < p2.name) return -1;
         return p1.id > p2.id ? 1  :-1;
     });
 }
