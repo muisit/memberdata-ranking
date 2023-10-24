@@ -10,6 +10,7 @@ const props = defineProps<{
 const auth = useAuthStore();
 auth.nonce = props.nonce;
 auth.baseUrl = props.url;
+auth.isfrontend = false;
 auth.getConfiguration().then(() => auth.getBasicSettings(auth.configuration.sheet || 0, auth.configuration.groupingfield || ''));
 
 const tabindex = ref('matches');

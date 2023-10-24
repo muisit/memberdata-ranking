@@ -154,7 +154,7 @@ import { Edit, Plus } from '@element-plus/icons-vue';
             <RankingSelector />
             <div class="grid-actions">
                 <ElButton @click="reassess" type="primary" v-if="!auth.isfrontend">{{ lang.REASSESS }}</ElButton>
-                <ElButton @click="addNew" type="primary" v-if="auth.token.length">
+                <ElButton @click="addNew" type="primary" v-if="auth.token.length || !auth.isfrontend">
                     <ElIcon size="large"><Plus/></ElIcon>
                     &nbsp;{{ lang.ADD }}
                 </ElButton>
