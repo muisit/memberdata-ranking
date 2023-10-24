@@ -113,14 +113,16 @@ HEREDOC;
             $name = $row['name'] ?? 'N.N.';
             $group = $groupname == 'all' ? ($row['groupname'] ?? null) : null;
             if (!isset($row['rankings']) || (!empty($rankname) && !isset($row['rankings'][$rankname]))) {
-                $rank = 1000;
+                $rank = 0;
             }
             else if (empty($rankname)) {
                 $rank = max($row['rankings']);
             }
             else {
-                $rank = $row['rankings'][$rankname] ?? 1000;
+                $rank = $row['rankings'][$rankname] ?? 0;
             }
+
+            if ($rank <= 0) continue;
 
             $realpos += 1;
             if ($lastrank < 0 || $lastrank != $rank) {
