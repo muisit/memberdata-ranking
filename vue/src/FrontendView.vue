@@ -18,7 +18,10 @@ auth.token = props.token;
 auth.currentGroup = props.group;
 auth.currentRanking = props.ranking;
 auth.isfrontend = true;
-auth.getConfiguration().then(() => auth.getBasicSettings(auth.configuration.sheet || 0, auth.configuration.groupingfield || ''));
+auth.getConfiguration().then(() => {
+    auth.getBasicSettings(auth.configuration.sheet || 0, auth.configuration.groupingfield || '');
+    auth.getPlayers();
+});
 
 const tabindex = ref('matches');
 import MatchView from './components/MatchView.vue';
@@ -26,8 +29,10 @@ import PlayersView from './components/PlayersView.vue';
 import { ElTabs, ElTabPane } from 'element-plus';
 </script>
 <template>
-    <ElTabs v-model="tabindex">
-      <ElTabPane :label="lang.TAB_MATCHES" name="matches"><MatchView :visible="tabindex == 'matches'"/></ElTabPane>
-      <ElTabPane :label="lang.TAB_RANKING" name="ranking"><PlayersView :visible="tabindex == 'ranking'"/></ElTabPane>
-    </ElTabs>
+    <div  class="memberdata_ranking">
+        <ElTabs v-model="tabindex">
+            <ElTabPane :label="lang.TAB_MATCHES" name="matches"><MatchView :visible="tabindex == 'matches'"/></ElTabPane>
+            <ElTabPane :label="lang.TAB_RANKING" name="ranking"><PlayersView :visible="tabindex == 'ranking'"/></ElTabPane>
+        </ElTabs>
+    </div>
 </template>

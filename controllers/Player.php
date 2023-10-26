@@ -32,7 +32,10 @@ class Player extends Base
 {
     public function index($data)
     {
-        $data = PlayerList::listPlayers();
+        $this->checkNonce();
+        $showall = $this->hasValidToken($data['model']['token'] ?? '') || self::canAuthenticate();
+        error_log("getting playerlist using null group and " . json_encode([$showall, $data]));
+        $data = PlayerList::listPlayers('all', $showall);
         return $data;
     }
 }

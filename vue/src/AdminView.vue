@@ -11,7 +11,10 @@ const auth = useAuthStore();
 auth.nonce = props.nonce;
 auth.baseUrl = props.url;
 auth.isfrontend = false;
-auth.getConfiguration().then(() => auth.getBasicSettings(auth.configuration.sheet || 0, auth.configuration.groupingfield || ''));
+auth.getConfiguration().then(() => {
+    auth.getBasicSettings(auth.configuration.sheet || 0, auth.configuration.groupingfield || '')
+    auth.getPlayers();
+});
 
 const tabindex = ref('matches');
 
@@ -21,7 +24,7 @@ import PlayersView from './components/PlayersView.vue';
 import ConfigView from './components/ConfigView.vue';
 </script>
 <template>
-  <div>
+  <div class="memberdata_ranking">
     <h1>{{ lang.ADMIN_PAGE }}</h1>
     <ElTabs v-model="tabindex">
       <ElTabPane :label="lang.TAB_MATCHES" name="matches"><MatchView :visible="tabindex == 'matches'"/></ElTabPane>

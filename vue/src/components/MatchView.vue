@@ -18,13 +18,10 @@ watch (
             if (!auth.groupingvalues?.includes(auth.currentGroup) && auth.groupingvalues?.length) {
                 auth.currentGroup = 'all';
             }
-            auth.getPlayers()
-                .then(() => {
-                    if (!auth.rankattributes.includes(auth.currentRanking)) {
-                        auth.currentRanking = auth.rankattributes[0];
-                    }
-                    updateMatches();
-                });
+            if (!auth.rankattributes.includes(auth.currentRanking)) {
+                auth.currentRanking = auth.rankattributes[0];
+            }
+            updateMatches();
         }
     },
     { immediate: true}

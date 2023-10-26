@@ -54,7 +54,12 @@ class Base extends BaseController
     protected function tokenOrAuthenticate($token)
     {
         $this->checkNonce();
+        return  $this->hasValidToken($token) || $this->authenticate();
+    }
+
+    protected function hasValidToken($token)
+    {
         $config = self::getRankConfig();
-        return $token == $config->token || $this->authenticate();
+        return $token == $config->token;
     }
 }
