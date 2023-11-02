@@ -50,6 +50,7 @@ class Plugin
                 self::updateMemberRanking($matchModel->results[0]->getLastResult($matchModel->matchtype), $config, $matchModel->matchtype);
                 self::updateMemberRanking($matchModel->results[1]->getLastResult($matchModel->matchtype), $config, $matchModel->matchtype);
             }
+            MatchAssessor::clearRankOfNonParticipants($matchModel->matchtype);
         }, 500, 1);
 
         add_filter('memberdata_save_configuration', function ($configuration) {
@@ -99,7 +100,7 @@ class Plugin
                 'member' => $member,
                 'attributes' => $attributes,
                 'messages' => [],
-                'config' => $config
+                'configuration' => $config
             ]);
         }
     }

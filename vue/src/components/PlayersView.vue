@@ -19,6 +19,7 @@ watch(
             if (!auth.rankattributes.includes(auth.currentRanking) && auth.rankattributes.length) {
                 auth.currentRanking = auth.rankattributes[0];
             }
+            auth.getPlayers();
         }
     },
     { immediate: true}

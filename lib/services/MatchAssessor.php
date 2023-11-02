@@ -26,6 +26,7 @@
 
 namespace MemberDataRanking\Lib\Services;
 
+use MemberData\Models\Member;
 use MemberDataRanking\Models\MemberMatch;
 use MemberDataRanking\Models\Result;
 use MemberDataRanking\Controllers\Base;
@@ -148,5 +149,41 @@ class MatchAssessor
             ->first();
 
         return new Result($value);
+    }
+
+    public static function clearRankOfNonParticipants(string $type)
+    {
+        // if participants are incorrectly added and later corrected, the ranking points of non-participants are not
+        // reset: there is no match linking them to the ranking anymore and so they keep their latest score
+        // This routine tries to find all participants for a given ranking and then updates all members who
+        // are not in that list, but do have a ranking column value.
+        $matchModel = new MemberMatch();
+        $resultModel = new Result();
+        $ids = $resultModel->select('distinct player_id as id')
+            ->leftJoin($matchModel->tableName(), 'mm', $resultModel->tableName() . '.match_id=mm.id')
+            ->where('mm.matchtype', $type)
+            ->get();
+        $ids = array_column($ids, 'id');
+
+        // get all members of the relevant sheet
+        $config = Base::getRankConfig();
+        $settings = [
+            'sheet' => $config->sheet
+        ];
+        $result = \apply_filters('memberdata_find_members', $settings);
+
+        foreach ($result['list'] as $member) {
+            if (!in_array($member['id'], $ids)) {
+                if (isset($member[$type])) {
+                    $object = new Member($member);
+                    apply_filters('memberdata_save_attributes', [
+                        'member' => $object,
+                        'attributes' => [$type => null],
+                        'messages' => [],
+                        'configuration' => ['configuration' => [['name' => $type, 'rules' => 'skip']]]
+                    ]);
+                }
+            }
+        }
     }
 }
