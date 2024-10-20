@@ -8,6 +8,7 @@ export interface Player {
     groupname?: string;
     status?: string;
     rankings: Rankings;
+    position?: number; // transient position recalculated each time we adjust the filter
 }
 
 export interface PlayerById {
