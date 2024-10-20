@@ -128,7 +128,8 @@ HEREDOC;
             if ($lastrank < 0 || $lastrank != $rank) {
                 $pos = $realpos;
             }
-           
+            $lastrank = $rank;
+
             $tablerows .= "\r\n<tr><td class='pos'>$pos</td><td class='player-name'>$name</td>";
             if ($groupname == "all") {
                 $tablerows .= "<td class='group-name'>$group</td>";

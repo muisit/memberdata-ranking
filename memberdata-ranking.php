@@ -12,7 +12,7 @@
  * Plugin Name:         memberdata-ranking
  * Plugin URI:          https://github.com/muisit/memberdata-ranking
  * Description:         Simple ranking of players in a configurable elo calculation
- * Version:             1.1.7
+ * Version:             1.1.8
  * Requires at least:   6.1
  * Requires PHP:        7.2
  * Author:              Michiel Uitdehaag
@@ -38,7 +38,7 @@
  * along with memberdata-ranking.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-define('MEMBERDATARANKING_VERSION', "1.1.7");
+define('MEMBERDATARANKING_VERSION', "1.1.8");
 define('MEMBERDATARANKING_PACKAGENAME', 'memberdata_ranking');
 
 function memberdata_ranking_autoloader($name)
