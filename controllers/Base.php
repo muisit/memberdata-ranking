@@ -60,6 +60,7 @@ class Base extends BaseController
     protected function hasValidToken($token)
     {
         $config = self::getRankConfig();
+        error_log("matching token $token vs $config->token");
         return $token == $config->token;
     }
 }

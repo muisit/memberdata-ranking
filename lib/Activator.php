@@ -66,7 +66,7 @@ class Activator
             // all those that are not yet marked as migrated
             $model = new Migration(MEMBERDATARANKING_PACKAGENAME . '_migrations');
             $model->activate(realpath(__DIR__ . '/../models'));
-            update_option(self::CONFIG, strftime('%F %T'));
+            update_option(self::CONFIG, (new \DateTimeImmutable())->format('Y-m-d H:i:s'));
         }
     }
 

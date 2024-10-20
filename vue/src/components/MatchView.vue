@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import type { Ref } from 'vue';
 import { matches, reassessMatches } from '@/lib/api';
 import type { FieldDefinition, Match, Result } from '@/lib/types';
@@ -36,10 +36,12 @@ watch(
 
 const matchList:Ref<Array<Match>> = ref([]);
 const matchCount = ref(0);
+const matchOffset = ref(0);
+const matchPagesize = ref(20);
 function updateMatches()
 {
     if (auth.currentRanking && auth.currentRanking.length && auth.rankattributes.includes(auth.currentRanking)) {
-        matches(auth.currentRanking, auth.isfrontend ? 10 : 20, 0).then((data:any) => {
+        matches(auth.currentRanking, matchPagesize.value, matchOffset.value).then((data:any) => {
             if (data.data) {
                 matchList.value = data.data.list || [];
                 matchCount.value = data.data.count;
@@ -138,11 +140,32 @@ function isDirtyMatch(matchData:Match)
     return matchData.results[0].is_dirty == 'Y' || matchData.results[1].is_dirty == 'Y';
 }
 
+function onPage(dir:number)
+{
+    if (dir < 0) {
+        matchOffset.value -= matchPagesize.value;
+        if (matchOffset.value < 0) {
+            matchOffset.value = 0;
+        }
+    }
+    else {
+        matchOffset.value += matchPagesize.value;
+        if (matchOffset.value > matchCount.value) {
+            matchOffset.value = Math.floor(matchCount.value / matchPagesize.value) * matchPagesize.value;
+        }
+    }
+    updateMatches();
+}
+
+const authenticated = computed(() => {
+    return auth.token.length  || !auth.isfrontend;
+});
+
 import MatchDialog from './MatchDialog.vue';
 import GroupSelector from './GroupSelector.vue';
 import RankingSelector from './RankingSelector.vue';
 import { ElIcon, ElButton } from 'element-plus';
-import { Edit, Plus } from '@element-plus/icons-vue';
+import { Edit, Plus, ArrowLeftBold, ArrowRightBold } from '@element-plus/icons-vue';
 </script>
 <template>
     <div>
@@ -150,8 +173,8 @@ import { Edit, Plus } from '@element-plus/icons-vue';
             <GroupSelector />
             <RankingSelector />
             <div class="grid-actions">
-                <ElButton @click="reassess" type="primary" v-if="!auth.isfrontend">{{ lang.REASSESS }}</ElButton>
-                <ElButton @click="addNew" type="primary" v-if="auth.token.length || !auth.isfrontend">
+                <ElButton @click="reassess" type="primary" v-if="authenticated">{{ lang.REASSESS }}</ElButton>
+                <ElButton @click="addNew" type="primary" v-if="authenticated">
                     <ElIcon size="large"><Plus/></ElIcon>
                     &nbsp;{{ lang.ADD }}
                 </ElButton>
@@ -160,8 +183,18 @@ import { Edit, Plus } from '@element-plus/icons-vue';
         <div class="grid">
             <table>
                 <thead>
+                    <tr v-if="authenticated">
+                        <th v-if="authenticated"></th>
+                        <th colspan="2">
+                            <div class="pager">
+                                <div class="page icon" v-if="matchOffset > 0"><ElIcon size='large' @click="onPage(-1)"><ArrowLeftBold/></ElIcon></div>
+                                <div class="page icon" v-if="matchOffset < (matchCount - matchPagesize)"><ElIcon size='large' @click="onPage(1)"><ArrowRightBold/></ElIcon></div>
+                            </div>
+                        </th>
+                        <th>{{ matchOffset }} / {{ matchCount }}</th>
+                    </tr>
                     <tr>
-                        <th v-if="!auth.isfrontend"></th>
+                        <th v-if="authenticated"></th>
                         <th>{{ lang.PLAYERS }}</th>
                         <th>{{ lang.SCORE }}</th>
                         <th>{{ lang.RANK }}</th>
@@ -169,12 +202,24 @@ import { Edit, Plus } from '@element-plus/icons-vue';
                 </thead>
                 <tbody>
                     <tr v-for="matchData in matchList" :key="matchData.id" :class="{isdirty: isDirtyMatch(matchData)}">
-                        <td v-if="!auth.isfrontend"><ElIcon size='large' @click="() => { matchValue = matchData; visibleDialog = true;}"><Edit/></ElIcon></td>
+                        <td v-if="authenticated"><ElIcon size='large' @click="() => { matchValue = matchData; visibleDialog = true;}"><Edit/></ElIcon></td>
                         <td>{{ getPlayersFromResults(matchData) }}</td>
                         <td>{{ getScoreFromResults(matchData) }}</td>
                         <td>{{ formatMatchDate(matchData.entered_at) }}</td>
                     </tr>
                 </tbody>
+                <tfoot v-if="authenticated">
+                    <tr>
+                        <th v-if="authenticated"></th>
+                        <th colspan="2">
+                            <div class="pager">
+                                <div class="page icon" v-if="matchOffset > 0"><ElIcon size='large' @click="onPage(-1)"><ArrowLeftBold/></ElIcon></div>
+                                <div class="page icon" v-if="matchOffset < (matchCount - matchPagesize)"><ElIcon size='large' @click="onPage(1)"><ArrowRightBold/></ElIcon></div>
+                            </div>
+                        </th>
+                        <th>{{ matchOffset }} / {{ matchCount }}</th>
+                    </tr>
+                </tfoot>
             </table>
         </div>
         <MatchDialog :matchdata="matchValue" :visible="visibleDialog" @on-close="onClose" @on-save="onSave" @on-update="onUpdate"/>

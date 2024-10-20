@@ -21,12 +21,21 @@
 
             button {
                 float: right;
+                margin-left: 10px;
             }
         }
     }
 
     .grid {
         table {
+            .pager {
+                display: flex;
+                flex-direction: row;
+
+                .page {
+                    min-width: 50px;
+                }
+            }
             tr.isdirty {
                 td {
                     color: #f33;

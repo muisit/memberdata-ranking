@@ -13,6 +13,7 @@ const props = defineProps<{
 const emits = defineEmits(['onClose', 'onSave', 'onUpdate']);
 
 const auth = useAuthStore();
+const actionsDisabled = ref(false);
 
 function closeForm()
 {
@@ -23,13 +24,19 @@ function removeMatch()
 {
     if (is_valid(props.matchdata.id)) {
         if (confirm(lang.CONFIRM_DELETE_MATCH)) {
-            removeMatchAPI(props.matchdata).then(() => emits('onSave'));
+            actionsDisabled.value = true;
+            removeMatchAPI(props.matchdata).then(() => {
+                emits('onSave');
+                actionsDisabled.value = false;
+            });
         }
     }
 }
 
 function submitForm()
 {
+    if (actionsDisabled.value) return false;
+    actionsDisabled.value = true;
     let retval = true;
     let matchdata = Object.assign({}, props.matchdata);
 
@@ -80,11 +87,16 @@ function submitForm()
                 else {
                     alert(lang.ERROR_MATCH_SAVE);
                 }
+                actionsDisabled.value = false;
             })
             .catch((e:any) => {
                 console.log(e);
                 alert(lang.ERROR_NETWORK);
+                actionsDisabled.value = false;
             });
+    }
+    else {
+        actionsDisabled.value = false;
     }
 }
 
@@ -201,9 +213,9 @@ import { ElDialog, ElForm, ElFormItem, ElInput, ElButton, ElAutocomplete } from 
       </ElForm>
       <template #footer>
         <span class="dialog-footer">
-          <ElButton type="warning" @click="removeMatch" v-if="is_valid(props.matchdata.id)">{{ lang.REMOVE }}</ElButton>
-          <ElButton type="warning" @click="closeForm">{{ lang.CANCEL }}</ElButton>
-          <ElButton type="primary" @click="submitForm">{{ lang.SAVE }}</ElButton>
+          <ElButton type="warning" :disabled="actionsDisabled" @click="removeMatch" v-if="is_valid(props.matchdata.id)">{{ lang.REMOVE }}</ElButton>
+          <ElButton type="warning" :disabled="actionsDisabled" @click="closeForm">{{ lang.CANCEL }}</ElButton>
+          <ElButton type="primary" :disabled="actionsDisabled" @click="submitForm">{{ lang.SAVE }}</ElButton>
         </span>
       </template>
     </ElDialog>

@@ -33,8 +33,9 @@ class Player extends Base
     public function index($data)
     {
         $this->checkNonce();
+        error_log("token " . json_encode($data));
         $showall = $this->hasValidToken($data['model']['token'] ?? '') || self::canAuthenticate();
-        error_log("getting playerlist using null group and " . json_encode([$showall, $data]));
+        error_log("showall " . json_encode($showall));
         $data = PlayerList::listPlayers('all', $showall);
         return $data;
     }

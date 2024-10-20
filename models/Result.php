@@ -64,7 +64,7 @@ class Result extends Base
         else  {
             $this->modifier = -1;
         }
-        $this->modified = strftime('%F %T');
+        $this->modified = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
         return parent::save();
     }
 
